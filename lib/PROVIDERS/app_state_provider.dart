@@ -7,7 +7,7 @@ class AppStateProvider extends ChangeNotifier {
   bool get shouldNavigate => _shouldNavigate;
 
   void startTimer() {
-    Timer(const Duration(minutes: 30), () {
+    Timer(const Duration(minutes: 20), () {
       _shouldNavigate = true;
       notifyListeners();
     });
