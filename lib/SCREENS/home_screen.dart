@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
-import 'onboarding_screen.dart';
+
+import 'onboarding_state.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Home Screen'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            // Display an image in the center
-            Image.asset(
-                'lib/images/fianderlogo.png'), // Ensure the image is in your assets
-          ],
+      appBar: AppBar(backgroundColor: Colors.white),
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              // Display an image in the center
+              Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Image.asset('lib/images/fianderlogo.png'),
+              ), // Ensure the image is in your lib folder
+            ],
+          ),
         ),
       ),
     );
@@ -28,25 +31,22 @@ class HomeScreenLoader extends StatefulWidget {
 }
 
 class _HomeScreenLoaderState extends State<HomeScreenLoader> {
-  bool shouldNavigate = false;
-
   @override
   void initState() {
     super.initState();
-    // Start the timer
-    startTimer();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Start the timer
+      startTimer();
+    });
   }
 
   void startTimer() {
-    // Set a timer for 30 seconds
-    Future.delayed(Duration(minutes: 30), () {
-      // After 30 seconds, set shouldNavigate to true and navigate to OnboardingScreen
-      setState(() {
-        shouldNavigate = true;
-      });
+    // Set a timer for 20 seconds
+    Future.delayed(Duration(seconds: 5), () {
+      // Navigate to OnboardingScreen
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => OnboardingScreen()),
+        MaterialPageRoute(builder: (context) => const slider()),
       );
     });
   }
@@ -54,7 +54,7 @@ class _HomeScreenLoaderState extends State<HomeScreenLoader> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: HomeScreen(), // Show the HomeScreen
+      body: HomeScreen(),
     );
   }
 }

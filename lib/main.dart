@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'providers/email_verification_provider.dart';
 import 'screens/home_screen.dart';
 import 'providers/app_state_provider.dart';
 
@@ -9,11 +10,18 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AppStateProvider()),
+        ChangeNotifierProvider(
+          create: (_) => AppStateProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => EmailVerificationProvider(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -23,7 +31,7 @@ class MyApp extends StatelessWidget {
             Theme.of(context).textTheme,
           ),
         ),
-        home: HomeScreen(),
+        home: HomeScreenLoader(),
       ),
     );
   }
