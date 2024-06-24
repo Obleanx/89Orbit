@@ -159,7 +159,6 @@ class CustomTickEffect extends WormEffect {
           radius: radius,
         );
 
-  @override
   void draw(Canvas canvas, Size size, double progress, double dotOffset) {
     final double halfHeight = dotHeight / 2;
     final double dotOffsetEnd = dotOffset + dotWidth;
