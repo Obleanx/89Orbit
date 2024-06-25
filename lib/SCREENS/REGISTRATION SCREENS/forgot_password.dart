@@ -7,7 +7,7 @@ class ForgotPasswordScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PasswordCreationScreen(
-      title: 'Create Password',
+      title: 'Reset Password',
       subtitle: 'Secure your account',
       passwordHint: 'Enter your password',
       confirmPasswordHint: 'Confirm your password',
