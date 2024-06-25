@@ -1,9 +1,11 @@
 import 'package:fiander/COMPONENTS/reuseable_widgets.dart';
 import 'package:fiander/CONSTANTS/constants.dart';
+import 'package:fiander/SCREENS/REGISTRATION%20SCREENS/avatar_profile.dart';
 import 'package:fiander/SCREENS/REGISTRATION%20SCREENS/email_veri.dart';
 import 'package:fiander/SCREENS/REGISTRATION%20SCREENS/password_create.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import '../../COMPONENTS/avatar_screens_widget.dart';
 import '../onboarding_state.dart';
 import 'basic_info.dart';
 import 'phone_num_veri.dart';
@@ -26,11 +28,12 @@ class _RegistrationScreensState extends State<RegistrationScreens> {
         children: [
           PageView(
             controller: _controller,
-            children: const [
-              BsicInfoScreen(),
-              EmailVerificationScreen(),
-              PhoneVerificationScreen(),
-              YourPasswordScreen(),
+            children: [
+              const BsicInfoScreen(),
+              const EmailVerificationScreen(),
+              const PhoneVerificationScreen(),
+              const YourPasswordScreen(),
+              FemaleAvatarSelectionScreen(),
             ],
           ),
           Positioned(
@@ -55,7 +58,7 @@ class _RegistrationScreensState extends State<RegistrationScreens> {
                 const SizedBox(width: 90),
                 SmoothPageIndicator(
                   controller: _controller,
-                  count: 4,
+                  count: 5,
                   effect: CustomTickEffect(
                     tickIcon: Icons.check,
                     tickColor: Colors.white,

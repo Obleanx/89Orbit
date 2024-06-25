@@ -199,7 +199,7 @@ class _PasswordCreationScreenState extends State<PasswordCreationScreen> {
                 child: ElevatedButton(
                   onPressed: widget.onSubmitPressed,
                   style: ElevatedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(40),
+                    minimumSize: const Size.fromHeight(50),
                     backgroundColor:
                         TextsInsideButtonColor, // Customize button color as needed
                   ),

@@ -4,7 +4,6 @@ import 'package:fiander/screens/onboarding_page1.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../CONSTANTS/constants.dart';
-import 'package:timeline_tile/timeline_tile.dart';
 
 class slider extends StatefulWidget {
   const slider({Key? key}) : super(key: key);

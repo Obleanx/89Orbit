@@ -160,9 +160,6 @@ class CustomTickEffect extends WormEffect {
         );
 
   void draw(Canvas canvas, Size size, double progress, double dotOffset) {
-    final double halfHeight = dotHeight / 2;
-    final double dotOffsetEnd = dotOffset + dotWidth;
-    final double xPos = dotOffset + (dotWidth / 2);
     final Paint paint = Paint()..color = dotColor;
 
     for (int i = 0; i < size.width / (dotWidth + spacing); i++) {

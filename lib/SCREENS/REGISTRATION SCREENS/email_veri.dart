@@ -1,6 +1,4 @@
-import 'package:fiander/providers/email_verification_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../COMPONENTS/reuseable_widgets.dart';
 
 class EmailVerificationScreen extends StatelessWidget {
@@ -8,8 +6,6 @@ class EmailVerificationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<EmailVerificationProvider>(context);
-
     return VerificationScreen(
       title: 'Verify your email', // Customize the title here
       subtitle:
