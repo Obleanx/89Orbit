@@ -28,11 +28,11 @@ class _RegistrationScreensState extends State<RegistrationScreens> {
         children: [
           PageView(
             controller: _controller,
-            children: [
-              const BsicInfoScreen(),
-              const EmailVerificationScreen(),
-              const PhoneVerificationScreen(),
-              const YourPasswordScreen(),
+            children: const [
+              BsicInfoScreen(),
+              EmailVerificationScreen(),
+              PhoneVerificationScreen(),
+              YourPasswordScreen(),
               FemaleAvatarSelectionScreen(),
             ],
           ),

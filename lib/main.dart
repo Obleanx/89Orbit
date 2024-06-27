@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'PROVIDERS/app_state_provider.dart' as uppercase;
-import 'providers/app_state_provider.dart' as lowercase;
 import 'providers/email_verification_provider.dart';
 import 'screens/home_screen.dart'; // Ensure this is imported correctly
 
