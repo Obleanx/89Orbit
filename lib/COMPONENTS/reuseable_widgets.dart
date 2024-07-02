@@ -9,7 +9,7 @@ import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-// Reusable widgets for the emails and account creation screens
+// Reusable widgets for the basic info screens.
 // You can change the text fields and their designs and functions if there is a problem.
 class CustomTextFormField extends StatelessWidget {
   final String labelText;
@@ -18,6 +18,8 @@ class CustomTextFormField extends StatelessWidget {
   final bool readOnly;
   final VoidCallback? onTap;
   final FormFieldValidator<String>? validator;
+  final AutovalidateMode autovalidateMode;
+
   final Widget? suffixIcon;
 
   const CustomTextFormField({
@@ -27,8 +29,9 @@ class CustomTextFormField extends StatelessWidget {
     this.controller,
     this.readOnly = false,
     this.onTap,
-    this.validator,
     this.suffixIcon,
+    required this.validator,
+    this.autovalidateMode = AutovalidateMode.disabled,
   }) : super(key: key);
 
   @override
@@ -74,6 +77,7 @@ class CustomTextFormField extends StatelessWidget {
       ),
       onTap: onTap,
       validator: validator,
+      autovalidateMode: autovalidateMode,
     );
   }
 }
