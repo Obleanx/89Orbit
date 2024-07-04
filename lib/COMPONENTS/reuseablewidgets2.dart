@@ -121,7 +121,7 @@ class _PasswordCreationScreenState extends State<PasswordCreationScreen> {
               ),
               const SizedBox(height: 20),
 
-              // Validation indicators with text
+              // Validation indicators for the password creation with text
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

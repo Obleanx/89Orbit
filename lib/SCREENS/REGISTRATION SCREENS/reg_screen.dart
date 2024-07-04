@@ -1,13 +1,16 @@
 import 'package:fiander/COMPONENTS/reuseable_widgets.dart';
 import 'package:fiander/CONSTANTS/constants.dart';
-import 'package:fiander/SCREENS/REGISTRATION%20SCREENS/avatar_profile.dart';
-import 'package:fiander/SCREENS/REGISTRATION%20SCREENS/email_veri.dart';
-import 'package:fiander/SCREENS/REGISTRATION%20SCREENS/password_create.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../onboarding_state.dart';
 import 'basic_info.dart';
-import 'phone_num_veri.dart';
+import 'email_password_screen.dart';
+import 'email_veri.dart';
+//import 'phone_num_veri.dart';
+import 'password_create.dart';
+import 'avatar_profile.dart';
+import 'phone_OTP.dart';
 
 class RegistrationScreens extends StatefulWidget {
   const RegistrationScreens({Key? key}) : super(key: key);
@@ -19,6 +22,14 @@ class RegistrationScreens extends StatefulWidget {
 class _RegistrationScreensState extends State<RegistrationScreens> {
   // Controller to keep track of the pages
   final PageController _controller = PageController();
+  User? currentUser; // Nullable User variable to hold logged-in user
+
+  // Method to set the logged-in user
+  void setCurrentUser(User? user) {
+    setState(() {
+      currentUser = user;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,16 +37,19 @@ class _RegistrationScreensState extends State<RegistrationScreens> {
       body: Stack(
         children: [
           PageView(
-            controller: _controller,
-            //physics: const NeverScrollableScrollPhysics(), // Disables  form one sceen to another
-            children: const [
-              BsicInfoScreen(),
-              EmailVerificationScreen(),
-              PhoneVerificationScreen(),
-              YourPasswordScreen(),
-              FemaleAvatarSelectionScreen(),
-            ],
-          ),
+              controller: _controller,
+              //physics: const NeverScrollableScrollPhysics(), // Disable sliding
+
+              children: [
+                EmailandPassword(setCurrentUser: setCurrentUser),
+                if (currentUser != null) BsicInfoScreen(user: currentUser!),
+                if (currentUser != null)
+                  EmailVerificationScreen(user: currentUser!),
+                if (currentUser != null)
+                  PhoneVerificationScreen(user: currentUser!),
+                const YourPasswordScreen(),
+                const FemaleAvatarSelectionScreen(),
+              ]),
           Positioned(
             top: 50.0, // Adjust the top position as needed
             left: 0,
@@ -51,9 +65,6 @@ class _RegistrationScreensState extends State<RegistrationScreens> {
                       ),
                     );
                   },
-                  // onPressed: () {
-                  // Navigator.of(context).pop(); // if you i want it to Navigate to previous screen
-                  //},
                 ),
                 const SizedBox(width: 90),
                 SmoothPageIndicator(

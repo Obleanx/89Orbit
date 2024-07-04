@@ -22,7 +22,7 @@ class AvatarSelectionScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Choose your avatar',
+              'Select your avatar',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 24,
@@ -30,7 +30,7 @@ class AvatarSelectionScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Select an avatar that best describes you',
+              'choose an avatar that best describes you',
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey,

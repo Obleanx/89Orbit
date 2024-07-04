@@ -211,145 +211,88 @@ class CustomTickEffect extends WormEffect {
     tickTextPainter.paint(canvas, offset);
   }
 }
-//reuseable widget for the email and phonenumber authentication
-//this design Holds he UI for the email, phonenumber, forgot password and create password screens.
 
+//reuseable widget for the email authentication/verification
 class VerificationScreen extends StatelessWidget {
   final String title;
   final String subtitle;
-
   final String buttonText;
-  final String phoneNumberButtonText;
-
+  // final String phoneNumberButtonText;
   final VoidCallback onButtonPressed;
   final VoidCallback onResendPressed;
+  // final VoidCallback onPhoneVerificationPressed;
+  final bool isEmailVerified;
 
   const VerificationScreen({
     Key? key,
     required this.title,
     required this.subtitle,
     required this.buttonText,
-    required this.phoneNumberButtonText, // Pass this as a parameter
-    // New parameter for phone number button text
-
+    // required this.phoneNumberButtonText,
     required this.onButtonPressed,
     required this.onResendPressed,
+    //required this.onPhoneVerificationPressed,
+    required this.isEmailVerified,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(title: Text(title)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 20,
-                    color: Colors.black,
-                  ),
-                ),
-                SizedBox(height: 4), // Adjust height as needed for spacing
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.normal,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(5, (index) {
-                return SizedBox(
-                  height: 50,
-                  width: 54,
-                  child: TextField(
-                    onChanged: (value) {
-                      if (value.length == 1) {
-                        FocusScope.of(context).nextFocus();
-                      }
-                    },
-                    style: Theme.of(context).textTheme.titleLarge,
-                    keyboardType: TextInputType.number,
-                    textAlign: TextAlign.center,
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(1),
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
-                    onSubmitted: (pin) {},
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey),
+            Text(subtitle, textAlign: TextAlign.center),
+            const SizedBox(height: 20),
+            const Spacer(),
+            SizedBox(
+              width: double.infinity,
+              child: Column(
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: onButtonPressed,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: TextsInsideButtonColor,
+                        foregroundColor: Colors.white,
+                        disabledBackgroundColor:
+                            TextsInsideButtonColor.withOpacity(0.9),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                      ),
+                      child: Text(
+                        isEmailVerified
+                            ? 'Email Verified'
+                            : 'Check Email Verification',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
-                );
-              }),
-            ),
-            const SizedBox(height: 10),
-            InkWell(
-              onTap: () {
-                // Navigate to another screen or perform action
-                // For example:
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => PhoneNumberVerificationScreen()),
-                // );
-              },
-              child: Text(
-                phoneNumberButtonText, // Use the customizable text here
-                style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.normal,
-                    color: TextsInsideButtonColor),
-              ),
-            ),
-            const Spacer(),
-            ElevatedButton(
-              onPressed: onButtonPressed,
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size.fromHeight(50),
-                backgroundColor:
-                    TextsInsideButtonColor, // Customize button color if needed
-              ),
-              child: Text(
-                buttonText,
-                style: const TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: const Icon(
-                    Icons.refresh,
-                    color: TextsInsideButtonColor,
-                  ),
-                  onPressed: onResendPressed,
-                ),
-                TextButton(
-                  onPressed: onResendPressed,
-                  child: const Text(
-                    'Resend Code',
-                    style: TextStyle(
-                      color: TextsInsideButtonColor,
+                  const SizedBox(height: 20),
+                  GestureDetector(
+                    onTap: onResendPressed,
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.refresh, color: TextsInsideButtonColor),
+                        SizedBox(width: 5),
+                        Text(
+                          'Resend link',
+                          style: TextStyle(
+                            color: TextsInsideButtonColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ),
-              ],
+                  )
+                ],
+              ),
             ),
           ],
         ),
