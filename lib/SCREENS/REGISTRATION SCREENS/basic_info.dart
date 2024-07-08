@@ -169,11 +169,15 @@ class _BsicInfoScreenState extends State<BsicInfoScreen> {
                     readOnly: true,
                     suffixIcon: const Icon(Icons.calendar_today),
                     onTap: () async {
+                      DateTime now = DateTime.now();
+                      DateTime maxDate = now.subtract(const Duration(
+                          days: 365 * 24 +
+                              6)); // 24 years ago, accounting for leap years
                       DateTime? pickedDate = await showDatePicker(
                         context: context,
-                        initialDate: DateTime.now(),
+                        initialDate: maxDate,
                         firstDate: DateTime(1900),
-                        lastDate: DateTime.now(),
+                        lastDate: maxDate,
                       );
                       if (pickedDate != null) {
                         setState(() {
@@ -182,9 +186,25 @@ class _BsicInfoScreenState extends State<BsicInfoScreen> {
                         });
                       }
                     },
-                    validator: (value) => value?.isEmpty ?? true
-                        ? 'Please enter your date of birth'
-                        : null,
+                    validator: (value) {
+                      if (value?.isEmpty ?? true) {
+                        return 'Please enter your date of birth';
+                      }
+                      DateTime? dob = DateFormat('MM-dd-yyyy').tryParse(value!);
+                      if (dob == null) {
+                        return 'Invalid date format';
+                      }
+                      DateTime now = DateTime.now();
+                      int age = now.year - dob.year;
+                      if (now.month < dob.month ||
+                          (now.month == dob.month && now.day < dob.day)) {
+                        age--;
+                      }
+                      if (age < 24) {
+                        return 'You must be at least 24 years old';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 30),
                   InputDecorator(

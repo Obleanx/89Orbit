@@ -7,7 +7,6 @@ import '../onboarding_state.dart';
 import 'basic_info.dart';
 import 'email_password_screen.dart';
 import 'email_veri.dart';
-//import 'phone_num_veri.dart';
 import 'password_create.dart';
 import 'avatar_profile.dart';
 import 'phone_OTP.dart';
@@ -46,7 +45,9 @@ class _RegistrationScreensState extends State<RegistrationScreens> {
                 if (currentUser != null)
                   EmailVerificationScreen(user: currentUser!),
                 if (currentUser != null)
-                  PhoneVerificationScreen(user: currentUser!),
+                  PhoneVerificationScreen(
+                    user: currentUser!,
+                  ),
                 const YourPasswordScreen(),
                 const FemaleAvatarSelectionScreen(),
               ]),
@@ -69,7 +70,7 @@ class _RegistrationScreensState extends State<RegistrationScreens> {
                 const SizedBox(width: 90),
                 SmoothPageIndicator(
                   controller: _controller,
-                  count: 5,
+                  count: 4,
                   effect: CustomTickEffect(
                     tickIcon: Icons.check,
                     tickColor: Colors.white,
