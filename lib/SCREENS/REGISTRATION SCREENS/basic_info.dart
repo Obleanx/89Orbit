@@ -1,10 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
-import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fiander/COMPONENTS/reuseable_widgets.dart';
 import 'package:fiander/SCREENS/REGISTRATION%20SCREENS/email_veri.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -239,10 +237,7 @@ class _BsicInfoScreenState extends State<BsicInfoScreen> {
                   const SizedBox(height: 35),
                   CustomPhoneNumberField(
                     controller: _phoneController,
-                    validator: (phoneNumber) =>
-                        phoneNumber?.number.isEmpty ?? true
-                            ? 'Please enter your phone number'
-                            : null,
+                    initialCountryCode: '+234',
                   ),
                   const SizedBox(height: 90),
                   Align(

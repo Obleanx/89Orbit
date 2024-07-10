@@ -1,6 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../CONSTANTS/constants.dart';
@@ -56,7 +57,9 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
         // Handle the case where user document doesn't exist
       }
     } catch (e) {
-      print("Error fetching phone number: $e");
+      if (kDebugMode) {
+        print("Error fetching phone number: $e");
+      }
       setState(() {
         _isLoading = false;
       });
