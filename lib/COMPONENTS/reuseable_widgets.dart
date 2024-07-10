@@ -1,5 +1,4 @@
 //Please be careful with this codes in this file becus most of them are used in so many parts of the app.
-
 import 'dart:async';
 import 'package:fiander/CONSTANTS/constants.dart';
 import 'package:flutter/foundation.dart';
@@ -84,61 +83,110 @@ class CustomTextFormField extends StatelessWidget {
 
 //reuseable widgets for phone number picker
 //you can change the design of the textfield for the phonenumber button here.
-class CustomPhoneNumberField extends StatelessWidget {
+
+class CustomPhoneNumberField extends StatefulWidget {
   final TextEditingController? controller;
-  final FutureOr<String?> Function(PhoneNumber?)? validator;
   final String initialCountryCode;
 
   const CustomPhoneNumberField({
     Key? key,
     this.controller,
-    this.validator,
-    this.initialCountryCode = 'NG', // Nigeria as the default country code
+    this.initialCountryCode = '+234', // Nigeria as the default country code
   }) : super(key: key);
 
   @override
+  _CustomPhoneNumberFieldState createState() => _CustomPhoneNumberFieldState();
+}
+
+class _CustomPhoneNumberFieldState extends State<CustomPhoneNumberField> {
+  late TextEditingController _countryCodeController;
+  late TextEditingController _phoneController;
+
+  @override
+  void initState() {
+    super.initState();
+    _countryCodeController =
+        TextEditingController(text: widget.initialCountryCode);
+    _phoneController = widget.controller ?? TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _countryCodeController.dispose();
+    _phoneController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return IntlPhoneField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: 'Phone Number',
-        hintText: 'Enter your phone number',
-        fillColor: Colors.white,
-        filled: true,
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.0),
-          borderSide: const BorderSide(
-            color: Colors.grey,
+    return Row(
+      children: [
+        Expanded(
+          flex: 2,
+          child: TextFormField(
+            controller: _countryCodeController,
+            decoration: InputDecoration(
+              labelText: 'Country Code',
+              fillColor: Colors.white,
+              filled: true,
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: const BorderSide(color: Colors.grey),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7.0),
+                borderSide: const BorderSide(color: Colors.grey, width: 1.0),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7.0),
+              ),
+            ),
+            keyboardType: TextInputType.phone,
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[+\d]')),
+              LengthLimitingTextInputFormatter(
+                  4), // Assuming country codes won't be more than 4 characters
+            ],
           ),
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(7.0),
-          borderSide: const BorderSide(
-            color: Colors.grey,
-            width: 1.0,
+        const SizedBox(width: 8.0),
+        Expanded(
+          flex: 5,
+          child: TextFormField(
+            controller: _phoneController,
+            decoration: InputDecoration(
+              labelText: 'Phone Number',
+              hintText: 'Enter your phone number',
+              fillColor: Colors.white,
+              filled: true,
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: const BorderSide(color: Colors.grey),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7.0),
+                borderSide: const BorderSide(color: Colors.grey, width: 1.0),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(7.0),
+              ),
+            ),
+            keyboardType: TextInputType.phone,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              LengthLimitingTextInputFormatter(
+                  10), // Limiting phone number length to 10 digits
+            ],
           ),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(7.0),
-        ),
-        labelStyle: const TextStyle(
-          color: Colors.grey,
-          fontSize: 12,
-        ),
-      ),
-      initialCountryCode: initialCountryCode,
-      onChanged: (phone) {
-        if (kDebugMode) {
-          print(phone.completeNumber);
-        } // You can handle phone number changes here
-      },
-      validator: validator,
+      ],
     );
   }
 }
-
 //Reuseable widgets for the dot indicator at the top of the screens for swiping.
 
 class CustomTickEffect extends WormEffect {
