@@ -221,7 +221,7 @@ class _EmailandPasswordContent extends StatelessWidget {
         // Close loading indicator
         Navigator.of(context).pop();
 
-        // Show error message
+        // Show error message when users try to create account.
         showDialog(
           context: context,
           builder: (BuildContext context) {

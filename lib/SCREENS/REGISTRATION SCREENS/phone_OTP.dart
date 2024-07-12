@@ -32,10 +32,14 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchPhoneNumber();
+    _fetchAndVerifyPhoneNumber();
   }
 
-  Future<void> _fetchPhoneNumber() async {
+  Future<void> _fetchAndVerifyPhoneNumber() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     try {
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('users')
@@ -43,60 +47,148 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
           .get();
 
       if (userDoc.exists) {
-        setState(() {
-          _phoneNumber = userDoc.get('phone') as String?;
-          _isLoading = false;
-        });
-        if (_phoneNumber != null) {
-          _verifyPhoneNumber();
+        String? phoneNumber = userDoc.get('phone') as String?;
+        bool? isVerified = userDoc.get('phoneVerified') as bool?;
+
+        if (phoneNumber != null) {
+          phoneNumber = formatToE164(phoneNumber); // This should now work
+          setState(() {
+            _phoneNumber = phoneNumber;
+          });
+
+          if (isVerified != true) {
+            await _verifyPhoneNumber();
+          } else {
+            print("Phone number is already verified");
+          }
+        } else {
+          print("No phone number found for this user");
         }
       } else {
-        setState(() {
-          _isLoading = false;
-        });
-        // Handle the case where user document doesn't exist
+        print("User document does not exist");
       }
     } catch (e) {
-      if (kDebugMode) {
-        print("Error fetching phone number: $e");
-      }
+      print("Error fetching phone number: $e");
+    } finally {
       setState(() {
         _isLoading = false;
       });
-      // Handle the error (show a message to the user, etc.)
     }
   }
 
   Future<void> _verifyPhoneNumber() async {
-    if (_phoneNumber == null) return;
+    if (_phoneNumber == null || _phoneNumber!.isEmpty) {
+      print("Error: Phone number is null or empty");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Phone number is missing")),
+      );
+      return;
+    }
 
-    await _auth.verifyPhoneNumber(
-      phoneNumber: _phoneNumber!,
-      verificationCompleted: (PhoneAuthCredential credential) async {
-        await _auth.currentUser?.updatePhoneNumber(credential);
-        // Navigate to next screen or show success message
-      },
-      verificationFailed: (FirebaseAuthException e) {
-        // Show error message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Verification Failed: ${e.message}")),
+    print("Attempting to verify phone number: $_phoneNumber");
+
+    int retryCount = 0;
+    const int maxRetries = 3;
+    const Duration retryDelay = Duration(seconds: 5);
+
+    while (retryCount < maxRetries) {
+      try {
+        await FirebaseAuth.instance.verifyPhoneNumber(
+          phoneNumber: _phoneNumber!,
+          verificationCompleted: (PhoneAuthCredential credential) async {
+            print("Verification completed automatically");
+            await _updateUserPhoneNumber(credential);
+          },
+          verificationFailed: (FirebaseAuthException e) {
+            print("Verification failed: ${e.message}");
+            throw e; // Rethrow to be caught in the outer try-catch
+          },
+          codeSent: (String verificationId, int? resendToken) {
+            print("Verification code sent");
+            setState(() {
+              _verificationId = verificationId;
+              _isCodeSent = true;
+            });
+          },
+          codeAutoRetrievalTimeout: (String verificationId) {
+            print("Auto retrieval timeout");
+            setState(() {
+              _verificationId = verificationId;
+            });
+          },
+          timeout: const Duration(seconds: 60),
         );
-      },
-      codeSent: (String verificationId, int? resendToken) {
-        setState(() {
-          _verificationId = verificationId;
-          _isCodeSent = true;
-          _isLoading = false;
-        });
-      },
-      codeAutoRetrievalTimeout: (String verificationId) {
-        setState(() {
-          _verificationId = verificationId;
-          _isLoading = false;
-        });
-      },
-    );
+
+        // If we reach here, it means the operation was successful
+        break;
+      } catch (e) {
+        print("Error in verifyPhoneNumber: $e");
+        retryCount++;
+        if (retryCount >= maxRetries) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(
+                    "Failed to verify phone number after $maxRetries attempts")),
+          );
+        } else {
+          print("Retrying in $retryDelay...");
+          await Future.delayed(retryDelay);
+        }
+      }
+    }
   }
+
+  Future<void> _updateUserPhoneNumber(PhoneAuthCredential credential) async {
+    try {
+      await FirebaseAuth.instance.currentUser?.updatePhoneNumber(credential);
+      print("Phone number updated successfully in Firebase Auth");
+
+      // Update Firestore to indicate the number is verified
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.user.uid)
+          .update({
+        'phoneVerified': true,
+        'phone': _phoneNumber,
+      });
+      print("Phone number updated and marked as verified in Firestore");
+
+      // Navigate to next screen or show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Phone number verified successfully")),
+      );
+    } catch (e) {
+      print("Error updating phone number: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to update phone number: $e")),
+      );
+    }
+  }
+
+  String formatToE164(String phoneNumber) {
+    // Remove any non-digit characters
+    phoneNumber = phoneNumber.replaceAll(RegExp(r'\D'), '');
+
+    // Check if the number already starts with +234
+    if (phoneNumber.startsWith('+234')) {
+      return phoneNumber;
+    }
+
+    // If it starts with 234, just add the +
+    if (phoneNumber.startsWith('234')) {
+      return '+$phoneNumber';
+    }
+
+    // If it starts with 0, replace it with +234
+    if (phoneNumber.startsWith('0')) {
+      return '+234${phoneNumber.substring(1)}';
+    }
+
+    // If none of the above, assume it's a local number and add +234
+    return '+234$phoneNumber';
+  }
+
+// Your existing formatToE164 function remains unchanged
 
   Future<void> _submitOTP() async {
     String otp = _otpControllers.map((controller) => controller.text).join();
@@ -121,6 +213,20 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
     }
   }
 
+  String formatPhoneNumberForDisplay(String phoneNumber) {
+    // Remove any non-digit characters
+    String digitsOnly = phoneNumber.replaceAll(RegExp(r'\D'), '');
+
+    // If it doesn't start with the country code, add it
+    if (!digitsOnly.startsWith('234')) {
+      digitsOnly = '234' +
+          (digitsOnly.startsWith('0') ? digitsOnly.substring(1) : digitsOnly);
+    }
+
+    // Format the number for display without space after country code
+    return '+$digitsOnly';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -142,7 +248,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                   const SizedBox(height: 10),
                   Text(
                     _phoneNumber != null
-                        ? 'Please enter the OTP sent to $_phoneNumber'
+                        ? 'Please enter the OTP sent to ${formatPhoneNumberForDisplay(_phoneNumber!)}'
                         : 'No phone number found. Please update your profile.',
                     style: const TextStyle(fontSize: 14),
                   ),
