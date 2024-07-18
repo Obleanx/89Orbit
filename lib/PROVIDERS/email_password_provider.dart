@@ -16,6 +16,8 @@ class EmailPasswordProvider extends ChangeNotifier {
   String get password => _password;
   String get confirmPassword => _confirmPassword;
 
+  get phoneNumberController => null;
+
   void togglePasswordVisibility() {
     _isPasswordVisible = !_isPasswordVisible;
     notifyListeners();

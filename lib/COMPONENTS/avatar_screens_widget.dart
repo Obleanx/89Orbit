@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../PROVIDERS/avatar_screen_providers.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AvatarSelectionScreen extends StatelessWidget {
   final List<String> avatarImages;
@@ -48,11 +50,31 @@ class AvatarSelectionScreen extends StatelessWidget {
                 itemCount: avatarImages.length,
                 itemBuilder: (context, index) {
                   return GestureDetector(
-                    onTap: () {
+                    onTap: () async {
                       Provider.of<AvatarSelectionProvider>(context,
                               listen: false)
                           .selectAvatar(avatarImages[index]);
-                      // Handle the backend logic here if needed
+
+                      // Update Firestore
+                      try {
+                        User? user = FirebaseAuth.instance.currentUser;
+                        if (user != null) {
+                          await FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(user.uid)
+                              .update({'profileImage': avatarImages[index]});
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text('Avatar selected and updated')),
+                          );
+                        }
+                      } catch (e) {
+                        print('Error updating avatar: $e');
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Failed to update avatar')),
+                        );
+                      }
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -69,21 +91,48 @@ class AvatarSelectionScreen extends StatelessWidget {
             ),
             Center(
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   final selectedAvatar = Provider.of<AvatarSelectionProvider>(
                           context,
                           listen: false)
                       .selectedAvatar;
                   if (selectedAvatar != null) {
-                    // Handle button press, e.g., send selectedAvatar to backend
-                    if (kDebugMode) {
-                      print('Selected avatar: $selectedAvatar');
+                    try {
+                      // Get the current user
+                      User? user = FirebaseAuth.instance.currentUser;
+                      if (user != null) {
+                        // Update the user's profile in Firestore
+                        await FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(user.uid)
+                            .update({'profileImage': selectedAvatar});
+
+                        // Show success message
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content:
+                                  Text('Profile image updated successfully')),
+                        );
+
+                        // Navigate to the next screen or perform any other action
+                        // For example:
+                        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => NextScreen()));
+                      } else {
+                        throw Exception('No user logged in');
+                      }
+                    } catch (e) {
+                      // Handle any errors
+                      print('Error updating profile image: $e');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content: Text('Failed to update profile image')),
+                      );
                     }
                   } else {
                     // Handle no avatar selected case
-                    if (kDebugMode) {
-                      print('No avatar selected');
-                    }
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Please select an avatar')),
+                    );
                   }
                 },
                 style: elevatedButtonDesign,

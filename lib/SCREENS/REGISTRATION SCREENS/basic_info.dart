@@ -1,8 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fiander/COMPONENTS/phone_number.dart';
 import 'package:fiander/COMPONENTS/reuseable_widgets.dart';
 import 'package:fiander/SCREENS/REGISTRATION%20SCREENS/email_veri.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -17,24 +19,25 @@ class BsicInfoScreen extends StatefulWidget {
 }
 
 class _BsicInfoScreenState extends State<BsicInfoScreen> {
-  final _formKey = GlobalKey<FormState>();
   final _dobController = TextEditingController();
-  final _phoneController = TextEditingController();
   final _nameController = TextEditingController();
   final _residenceController = TextEditingController();
+  final _phonenumberController = TextEditingController();
   String _selectedGender = 'Female';
+
+  String? _phoneNumber;
 
   @override
   void dispose() {
     _dobController.dispose();
-    _phoneController.dispose();
     _nameController.dispose();
     _residenceController.dispose();
+    _phonenumberController.dispose();
     super.dispose();
   }
 
   Future<void> _saveUserData() async {
-    if (_formKey.currentState!.validate()) {
+    {
       // Show loading indicator
       showDialog(
         context: context,
@@ -63,9 +66,9 @@ class _BsicInfoScreenState extends State<BsicInfoScreen> {
           'email': widget.user.email,
           'dob': _dobController.text,
           'gender': _selectedGender,
-          'phone': _phoneController.text,
           'residence': _residenceController.text,
-          'isVerified': false,
+          'phone': _phoneNumber,
+          'isVerified': true,
         });
         await widget.user.sendEmailVerification();
 
@@ -84,24 +87,6 @@ class _BsicInfoScreenState extends State<BsicInfoScreen> {
         Navigator.pop(context);
 
         // Show error message
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text("Error"),
-              content: Text(
-                  "An error occurred while saving your data: $e. Please try again."),
-              actions: [
-                TextButton(
-                  child: const Text("OK"),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            );
-          },
-        );
       }
     }
   }
@@ -136,13 +121,12 @@ class _BsicInfoScreenState extends State<BsicInfoScreen> {
             ),
             const SizedBox(height: 26),
             Form(
-              key: _formKey,
               child: Column(
                 children: [
                   CustomTextFormField(
                     controller: _nameController,
                     labelText: 'Name',
-                    hintText: 'Enter your name',
+                    hintText: 'Enter your name and Surname',
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) => value?.isEmpty ?? true
                         ? 'Please enter your name'
@@ -157,6 +141,15 @@ class _BsicInfoScreenState extends State<BsicInfoScreen> {
                     validator: (value) => value?.isEmpty ?? true
                         ? 'Please enter your location'
                         : null,
+                  ),
+                  const SizedBox(height: 30),
+                  PhoneNumberInput(
+                    initialValue: '+234',
+                    onChanged: (phoneNumber) {
+                      setState(() {
+                        _phoneNumber = phoneNumber;
+                      });
+                    },
                   ),
                   const SizedBox(height: 30),
                   CustomTextFormField(
@@ -235,10 +228,6 @@ class _BsicInfoScreenState extends State<BsicInfoScreen> {
                     ),
                   ),
                   const SizedBox(height: 35),
-                  CustomPhoneNumberField(
-                    controller: _phoneController,
-                    initialCountryCode: '+234',
-                  ),
                   const SizedBox(height: 90),
                   Align(
                     alignment: Alignment.bottomCenter,
@@ -251,7 +240,19 @@ class _BsicInfoScreenState extends State<BsicInfoScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xfffb40ad),
                           ),
-                          onPressed: _saveUserData,
+                          onPressed: () {
+                            try {
+                              _saveUserData();
+                            } catch (e, stackTrace) {
+                              if (kDebugMode) {
+                                print('Network error');
+                              }
+                              if (kDebugMode) {
+                                print('Stack trace: $stackTrace');
+                              }
+                              // Handle the error (show a dialog, etc.)
+                            }
+                          },
                           child: const Text(
                             'N e x t',
                             style: TextStyle(

@@ -1,11 +1,11 @@
 import 'package:fiander/COMPONENTS/reuseable_widgets.dart';
 import 'package:fiander/CONSTANTS/constants.dart';
+import 'package:fiander/screens/REGISTRATION%20SCREENS/email_password_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../onboarding_state.dart';
 import 'basic_info.dart';
-import 'email_password_screen.dart';
 import 'email_veri.dart';
 import 'password_create.dart';
 import 'avatar_profile.dart';

@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../COMPONENTS/avatar_screens_widget.dart';
 import '../../CONSTANTS/constants.dart';
 
 class PhoneVerificationScreen extends StatefulWidget {
@@ -41,28 +42,27 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
     });
 
     try {
+      print("Fetching user document for UID: ${widget.user.uid}");
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc(widget.user.uid)
           .get();
 
+      print("User document exists: ${userDoc.exists}");
       if (userDoc.exists) {
+        print("Raw data from Firestore: ${userDoc.data()}");
         String? phoneNumber = userDoc.get('phone') as String?;
-        bool? isVerified = userDoc.get('phoneVerified') as bool?;
+        print("Retrieved phone number: $phoneNumber");
 
-        if (phoneNumber != null) {
-          phoneNumber = formatToE164(phoneNumber); // This should now work
+        if (phoneNumber != null && phoneNumber.isNotEmpty) {
+          phoneNumber = formatToE164(phoneNumber);
+          print("Formatted phone number: $phoneNumber");
           setState(() {
             _phoneNumber = phoneNumber;
           });
-
-          if (isVerified != true) {
-            await _verifyPhoneNumber();
-          } else {
-            print("Phone number is already verified");
-          }
+          print("_phoneNumber set to: $_phoneNumber");
         } else {
-          print("No phone number found for this user");
+          print("Phone number is null or empty");
         }
       } else {
         print("User document does not exist");
@@ -80,7 +80,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
     if (_phoneNumber == null || _phoneNumber!.isEmpty) {
       print("Error: Phone number is null or empty");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Phone number is missing")),
+        const SnackBar(content: Text("Phone number is missing")),
       );
       return;
     }
@@ -117,6 +117,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
             });
           },
           timeout: const Duration(seconds: 60),
+          forceResendingToken: null,
         );
 
         // If we reach here, it means the operation was successful
@@ -126,7 +127,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
         retryCount++;
         if (retryCount >= maxRetries) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
                 content: Text(
                     "Failed to verify phone number after $maxRetries attempts")),
           );
@@ -155,7 +156,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
 
       // Navigate to next screen or show success message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Phone number verified successfully")),
+        const SnackBar(content: Text("Phone number verified successfully")),
       );
     } catch (e) {
       print("Error updating phone number: $e");
@@ -165,6 +166,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
     }
   }
 
+  //this function allows the inputed phone number to be only in the E.164 format required by the cloud service for phone OTP. abeg the careful here!!!
   String formatToE164(String phoneNumber) {
     // Remove any non-digit characters
     phoneNumber = phoneNumber.replaceAll(RegExp(r'\D'), '');
@@ -292,6 +294,12 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                       onPressed: () {
                         onPressed:
                         _isCodeSent ? _submitOTP : null;
+                        // Navigator.pushReplacement(
+                        //  context,
+                        // MaterialPageRoute(
+                        // builder: (context) => AvatarSelectionScreen(avatarImages: [],),
+                        //  ),
+                        // );
                       },
                       style: elevatedButtonDesign,
                       child: const Text(
@@ -304,10 +312,10 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                     ),
                   ),
                   if (!_isCodeSent) ...[
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: _verifyPhoneNumber,
-                      child: Text('Send OTP'),
+                      child: const Text('Send OTP'),
                     ),
                   ],
                   const SizedBox(height: 10),
