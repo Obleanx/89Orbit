@@ -9,6 +9,7 @@ class PhoneNumberInput extends StatefulWidget {
     Key? key,
     required this.onChanged,
     this.initialValue,
+    required TextEditingController controller,
   }) : super(key: key);
 
   @override
@@ -48,7 +49,9 @@ class _PhoneNumberInputState extends State<PhoneNumberInput> {
       keyboardType: TextInputType.phone,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       decoration: const InputDecoration(
+        contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
         labelText: 'Phone Number',
+        labelStyle: TextStyle(fontWeight: FontWeight.bold),
         hintText: '+234 XXXXXXXXXX',
         prefixIcon: Icon(Icons.phone),
         border: OutlineInputBorder(),

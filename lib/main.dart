@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'PROVIDERS/app_state_provider.dart' as uppercase;
 import 'package:firebase_core/firebase_core.dart';
+import 'PROVIDERS/login_screen_provider.dart';
 import 'screens/home_screen.dart';
 
 void main() async {
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<AvatarSelectionProvider>(
           create: (_) => AvatarSelectionProvider(),
         ),
+        ChangeNotifierProvider(create: (_) => AppState()), // Add AppState here
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

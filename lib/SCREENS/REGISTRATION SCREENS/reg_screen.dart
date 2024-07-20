@@ -7,6 +7,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../onboarding_state.dart';
 import 'basic_info.dart';
 import 'email_veri.dart';
+import 'forgot_password.dart';
 import 'password_create.dart';
 import 'avatar_profile.dart';
 import 'phone_OTP.dart';
@@ -48,7 +49,7 @@ class _RegistrationScreensState extends State<RegistrationScreens> {
                   PhoneVerificationScreen(
                     user: currentUser!,
                   ),
-                const YourPasswordScreen(),
+                const ForgotPasswordScreen(),
                 const FemaleAvatarSelectionScreen(),
               ]),
           Positioned(

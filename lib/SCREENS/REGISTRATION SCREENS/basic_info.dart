@@ -150,6 +150,7 @@ class _BsicInfoScreenState extends State<BsicInfoScreen> {
                         _phoneNumber = phoneNumber;
                       });
                     },
+                    controller: _phonenumberController,
                   ),
                   const SizedBox(height: 30),
                   CustomTextFormField(

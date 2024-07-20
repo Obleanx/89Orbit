@@ -1,5 +1,6 @@
 // ignore_for_file: library_private_types_in_public_api
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fiander/COMPONENTS/otp_deletion.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,9 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
   String? _phoneNumber;
   bool _isLoading = true;
   bool _isCodeSent = false;
+  bool _isVerifying = false;
+  bool _isResending = false;
+  int? _resendToken;
 
   String _verificationId = "";
 
@@ -61,14 +65,26 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
             _phoneNumber = phoneNumber;
           });
           print("_phoneNumber set to: $_phoneNumber");
+
+          // Automatically start phone verification after fetching the number
+          await _verifyPhoneNumber();
         } else {
           print("Phone number is null or empty");
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Phone number is missing or invalid")),
+          );
         }
       } else {
         print("User document does not exist");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("User data not found")),
+        );
       }
     } catch (e) {
       print("Error fetching phone number: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
     } finally {
       setState(() {
         _isLoading = false;
@@ -87,40 +103,55 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
 
     print("Attempting to verify phone number: $_phoneNumber");
 
+    setState(() {
+      _isLoading = true;
+    });
+
     int retryCount = 0;
     const int maxRetries = 3;
     const Duration retryDelay = Duration(seconds: 5);
 
     while (retryCount < maxRetries) {
       try {
+        // Show message about potential reCAPTCHA
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                "You may be prompted to complete a reCAPTCHA verification."),
+            duration: Duration(seconds: 5),
+          ),
+        );
+
         await FirebaseAuth.instance.verifyPhoneNumber(
           phoneNumber: _phoneNumber!,
           verificationCompleted: (PhoneAuthCredential credential) async {
             print("Verification completed automatically");
             await _updateUserPhoneNumber(credential);
+            _navigateToNewScreen();
           },
           verificationFailed: (FirebaseAuthException e) {
             print("Verification failed: ${e.message}");
-            throw e; // Rethrow to be caught in the outer try-catch
+            throw e;
           },
           codeSent: (String verificationId, int? resendToken) {
             print("Verification code sent");
             setState(() {
               _verificationId = verificationId;
               _isCodeSent = true;
+              _isLoading = false;
             });
           },
           codeAutoRetrievalTimeout: (String verificationId) {
             print("Auto retrieval timeout");
             setState(() {
               _verificationId = verificationId;
+              _isLoading = false;
             });
           },
           timeout: const Duration(seconds: 60),
           forceResendingToken: null,
         );
 
-        // If we reach here, it means the operation was successful
         break;
       } catch (e) {
         print("Error in verifyPhoneNumber: $e");
@@ -128,8 +159,9 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
         if (retryCount >= maxRetries) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-                content: Text(
-                    "Failed to verify phone number after $maxRetries attempts")),
+              content: Text(
+                  "Failed to verify phone number after $maxRetries attempts"),
+            ),
           );
         } else {
           print("Retrying in $retryDelay...");
@@ -137,6 +169,19 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
         }
       }
     }
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  void _navigateToNewScreen() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+          builder: (context) => AvatarSelectionScreen(
+                avatarImages: [],
+              )),
+    );
   }
 
   Future<void> _updateUserPhoneNumber(PhoneAuthCredential credential) async {
@@ -166,12 +211,12 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
     }
   }
 
-  //this function allows the inputed phone number to be only in the E.164 format required by the cloud service for phone OTP. abeg the careful here!!!
+  //this function allows the inputed phone number to be only in the E.164 format required by the cloud service for phone OTP. I took me two weeks to make this work abeg the careful here!!!
   String formatToE164(String phoneNumber) {
-    // Remove any non-digit characters
+    // Remove any non-digit characters is what this code does
     phoneNumber = phoneNumber.replaceAll(RegExp(r'\D'), '');
 
-    // Check if the number already starts with +234
+    // Check if the number already starts with +234 na this one the do.
     if (phoneNumber.startsWith('+234')) {
       return phoneNumber;
     }
@@ -192,29 +237,6 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
 
 // Your existing formatToE164 function remains unchanged
 
-  Future<void> _submitOTP() async {
-    String otp = _otpControllers.map((controller) => controller.text).join();
-    if (otp.length != 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter a valid 6-digit OTP")),
-      );
-      return;
-    }
-
-    try {
-      PhoneAuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: _verificationId,
-        smsCode: otp,
-      );
-      await _auth.currentUser?.updatePhoneNumber(credential);
-      // Navigate to next screen or show success message
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Verification Failed: $e")),
-      );
-    }
-  }
-
   String formatPhoneNumberForDisplay(String phoneNumber) {
     // Remove any non-digit characters
     String digitsOnly = phoneNumber.replaceAll(RegExp(r'\D'), '');
@@ -227,6 +249,103 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
 
     // Format the number for display without space after country code
     return '+$digitsOnly';
+  }
+
+  Future<void> _submitOTP() async {
+    String otp = _otpControllers.map((controller) => controller.text).join();
+    if (otp.length != 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter a valid 6-digit OTP")),
+      );
+      return;
+    }
+
+    try {
+      print("Submitting OTP: $otp");
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: _verificationId,
+        smsCode: otp,
+      );
+      print("Credential created");
+
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception("No current user found");
+      }
+
+      print("Updating phone number for user: ${user.uid}");
+      await user.updatePhoneNumber(credential);
+      print("Phone number updated successfully");
+
+      // Navigate to the next screen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AvatarSelectionScreen(avatarImages: []),
+        ),
+      );
+    } catch (e) {
+      print("Error in _submitOTP: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Verification Failed: $e")),
+      );
+    }
+  }
+
+  Future<void> _resendOTP() async {
+    if (_phoneNumber == null || _phoneNumber!.isEmpty) {
+      throw Exception("Phone number is missing");
+    }
+
+    await FirebaseAuth.instance.verifyPhoneNumber(
+      phoneNumber: _phoneNumber!,
+      verificationCompleted: (PhoneAuthCredential credential) async {
+        // This callback will be triggered automatically on some devices
+        await _updateUserPhoneNumber(credential);
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        throw e;
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        setState(() {
+          _verificationId = verificationId;
+          _isCodeSent = true;
+        });
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {
+        setState(() {
+          _verificationId = verificationId;
+        });
+      },
+      forceResendingToken: _resendToken, // Use the resend token if available
+      timeout: const Duration(seconds: 60),
+    );
+    codeSent:
+    (String verificationId, int? resendToken) {
+      setState(() {
+        _verificationId = verificationId;
+        _isCodeSent = true;
+        _resendToken = resendToken;
+      });
+      clearOtpFields(); // Clear OTP fields when a new OTP is sent
+    };
+  }
+
+  void clearOtpFields() {
+    for (var controller in _otpControllers) {
+      controller.clear();
+    }
+    if (_otpControllers.isNotEmpty) {
+      FocusScope.of(context).requestFocus(FocusNode());
+      FocusScope.of(context).focusInDirection(TraversalDirection.down);
+    }
+  }
+
+  void _handleBackspace(int index) {
+    if (_otpControllers[index].text.isEmpty && index > 0) {
+      _otpControllers[index - 1].clear();
+      FocusScope.of(context).previousFocus();
+    }
   }
 
   @override
@@ -255,52 +374,42 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                     style: const TextStyle(fontSize: 14),
                   ),
                   const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: List.generate(6, (index) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          border: Border.all(color: Colors.grey),
-                        ),
-                        child: SizedBox(
-                          height: 45,
-                          width: 45,
-                          child: TextFormField(
-                            controller: _otpControllers[index],
-                            onChanged: (value) {
-                              if (value.length == 1 && index < 5) {
-                                FocusScope.of(context).nextFocus();
-                              }
-                            },
-                            onSaved: (pin1) {},
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            inputFormatters: [
-                              LengthLimitingTextInputFormatter(1),
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                            ),
-                          ),
-                        ),
-                      );
-                    }),
+                  OtpInputSection(
+                    onOtpComplete: (String otp) {
+                      if (kDebugMode) {
+                        print('OTP Entered: $otp');
+                      }
+                      // Call your verification method here
+                    },
                   ),
                   const Spacer(),
                   Center(
                     child: ElevatedButton(
-                      onPressed: () {
-                        onPressed:
-                        _isCodeSent ? _submitOTP : null;
-                        // Navigator.pushReplacement(
-                        //  context,
-                        // MaterialPageRoute(
-                        // builder: (context) => AvatarSelectionScreen(avatarImages: [],),
-                        //  ),
-                        // );
-                      },
+                      onPressed: _isCodeSent && !_isVerifying
+                          ? () async {
+                              setState(() {
+                                _isVerifying = true;
+                              });
+                              showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (BuildContext context) {
+                                  return Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                },
+                              );
+                              try {
+                                await _submitOTP();
+                              } finally {
+                                Navigator.of(context)
+                                    .pop(); // Dismiss the loading indicator
+                                setState(() {
+                                  _isVerifying = false;
+                                });
+                              }
+                            }
+                          : null,
                       style: elevatedButtonDesign,
                       child: const Text(
                         'Verify Account',
@@ -321,22 +430,42 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                   const SizedBox(height: 10),
                   Center(
                     child: GestureDetector(
-                      onTap: () {
-                        onTap:
-                        _verifyPhoneNumber;
+                      onTap: () async {
+                        setState(() {
+                          _isResending = true;
+                        });
+
+                        try {
+                          await _resendOTP();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("OTP resent successfully")),
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Failed to resend OTP: $e")),
+                          );
+                        } finally {
+                          setState(() {
+                            _isResending = false;
+                          });
+                        }
                       },
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
                             Icons.refresh,
-                            color: TextsInsideButtonColor,
+                            color: _isResending
+                                ? Colors.grey
+                                : TextsInsideButtonColor,
                           ),
                           SizedBox(width: 5),
                           Text(
-                            'Resend Code',
+                            _isResending ? 'Resending...' : 'Resend Code',
                             style: TextStyle(
-                              color: TextsInsideButtonColor,
+                              color: _isResending
+                                  ? Colors.grey
+                                  : TextsInsideButtonColor,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -348,5 +477,100 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
               ),
             ),
     );
+  }
+}
+
+class OtpInputSection extends StatefulWidget {
+  final Function(String) onOtpComplete;
+
+  OtpInputSection({Key? key, required this.onOtpComplete}) : super(key: key);
+
+  @override
+  _OtpInputSectionState createState() => _OtpInputSectionState();
+}
+
+class _OtpInputSectionState extends State<OtpInputSection> {
+  List<TextEditingController> _otpControllers =
+      List.generate(6, (_) => TextEditingController());
+  List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
+
+  @override
+  void initState() {
+    super.initState();
+    for (int i = 0; i < 6; i++) {
+      _otpControllers[i].addListener(() {
+        if (_otpControllers[i].text.length == 1 && i < 5) {
+          _focusNodes[i + 1].requestFocus();
+        }
+        _checkOtpComplete();
+      });
+    }
+  }
+
+  void _checkOtpComplete() {
+    String otp = _otpControllers.map((controller) => controller.text).join();
+    if (otp.length == 6) {
+      widget.onOtpComplete(otp);
+    }
+  }
+
+  void _handleBackspace(int index) {
+    if (_otpControllers[index].text.isEmpty && index > 0) {
+      _otpControllers[index - 1].clear();
+      _focusNodes[index - 1].requestFocus();
+    }
+  }
+
+  void clearOtpFields() {
+    for (var controller in _otpControllers) {
+      controller.clear();
+    }
+    _focusNodes.first.requestFocus();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: List.generate(
+        6,
+        (index) => SizedBox(
+          width: 45,
+          height: 45,
+          child: TextFormField(
+            controller: _otpControllers[index],
+            focusNode: _focusNodes[index],
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            maxLength: 1,
+            decoration: InputDecoration(
+              counterText: "",
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            onChanged: (value) {
+              if (value.isEmpty) {
+                _handleBackspace(index);
+              }
+            },
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    for (var controller in _otpControllers) {
+      controller.dispose();
+    }
+    for (var node in _focusNodes) {
+      node.dispose();
+    }
+    super.dispose();
   }
 }

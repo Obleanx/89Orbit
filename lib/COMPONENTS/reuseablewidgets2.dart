@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../CONSTANTS/constants.dart';
+import '../SCREENS/login_screen.dart';
 
 class PasswordCreationScreen extends StatefulWidget {
   final String title;
@@ -17,6 +18,7 @@ class PasswordCreationScreen extends StatefulWidget {
     required this.confirmPasswordHint,
     required this.submitButtonText,
     required this.onSubmitPressed,
+    required AppBar appBar,
   }) : super(key: key);
 
   @override
@@ -46,10 +48,19 @@ class _PasswordCreationScreenState extends State<PasswordCreationScreen> {
     return Scaffold(
       resizeToAvoidBottomInset:
           true, // Ensures the body resizes when keyboard appears
-
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const LoginWithPhonenumber()),
+            ); // Adjust route as needed
+          },
+        ),
       ),
       body: SingleChildScrollView(
         scrollDirection: Axis

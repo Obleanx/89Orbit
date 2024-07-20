@@ -1,3 +1,4 @@
+import 'package:fiander/SCREENS/login_screen.dart';
 import 'package:flutter/material.dart';
 import '../CONSTANTS/constants.dart';
 import 'REGISTRATION SCREENS/reg_screen.dart';
@@ -47,7 +48,13 @@ class OnboardingPage1 extends StatelessWidget {
                     ),
                     const SizedBox(height: 5),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LoginWithPhonenumber()),
+                        );
+                      },
                       child: const Text(
                         'Login with phone number',
                         style: TextStyle(
