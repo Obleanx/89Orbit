@@ -1,13 +1,13 @@
 import 'dart:io';
 import 'package:fiander/PROVIDERS/avatar_screen_providers.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fiander/PROVIDERS/home_screen_provider.dart';
+import 'package:fiander/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'PROVIDERS/app_state_provider.dart' as uppercase;
 import 'package:firebase_core/firebase_core.dart';
 import 'PROVIDERS/login_screen_provider.dart';
-import 'screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,13 +36,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => uppercase.AppStateProvider(),
-        ),
+        ChangeNotifierProvider(create: (_) => uppercase.AppStateProvider()),
         ChangeNotifierProvider<AvatarSelectionProvider>(
-          create: (_) => AvatarSelectionProvider(),
-        ),
-        ChangeNotifierProvider(create: (_) => AppState()), // Add AppState here
+            create: (_) => AvatarSelectionProvider()),
+        ChangeNotifierProvider(create: (_) => AppState()),
+        ChangeNotifierProvider(
+            create: (_) => HomeScreenProvider()), // Add the new provider here
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

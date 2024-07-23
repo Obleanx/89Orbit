@@ -52,7 +52,8 @@ class OnboardingPage1 extends StatelessWidget {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => LoginWithPhonenumber()),
+                              builder: (context) =>
+                                  const LoginWithPhonenumber()),
                         );
                       },
                       child: const Text(

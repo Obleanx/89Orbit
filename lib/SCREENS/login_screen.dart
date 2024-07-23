@@ -1,9 +1,10 @@
-// ignore_for_file: depend_on_referenced_packages, library_private_types_in_public_api
+// ignore_for_file: depend_on_referenced_packages, library_private_types_in_public_api, use_build_context_synchronously
 
+import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/home_screen.dart';
 import 'package:fiander/SCREENS/REGISTRATION%20SCREENS/forgot_password.dart';
+import 'package:fiander/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Import Firebase Auth
 import '../COMPONENTS/phone_number.dart';
 import '../CONSTANTS/constants.dart';
 import '../PROVIDERS/login_screen_provider.dart';
@@ -20,49 +21,6 @@ class _LoginWithPhonenumberState extends State<LoginWithPhonenumber> {
   bool _isPasswordVisible = false;
   final _phoneNumberController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _isLoading = false;
-
-  @override
-  void dispose() {
-    _phoneNumberController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _login() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      // Firebase Authentication logic
-      final phoneNumber = _phoneNumberController.text;
-      final password = _passwordController.text;
-
-      // This assumes FirebaseAuth is used for authentication
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: phoneNumber, // Use email as phoneNumber
-        password: password,
-      );
-
-      // Navigate to another screen if login is successful
-      Navigator.pushReplacementNamed(
-          context, '/home'); // Adjust route as needed
-    } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message ?? 'An error occurred')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Network error: Please try again')),
-      );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -135,19 +93,21 @@ class _LoginWithPhonenumberState extends State<LoginWithPhonenumber> {
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: ElevatedButton(
-                    onPressed: _isLoading ? null : _login,
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomeScreen1()),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size.fromHeight(50),
                       backgroundColor: TextsInsideButtonColor,
                     ),
-                    child: _isLoading
-                        ? const CircularProgressIndicator()
-                        : const Text(
-                            'Login',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                          ),
+                    child: const Text(
+                      'Login',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
               ],

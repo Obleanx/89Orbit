@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fiander/COMPONENTS/phone_number.dart';
 import 'package:fiander/COMPONENTS/reuseable_widgets.dart';
 import 'package:fiander/SCREENS/REGISTRATION%20SCREENS/email_veri.dart';
+import 'package:fiander/SCREENS/onboarding_state.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

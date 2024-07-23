@@ -1,14 +1,14 @@
 import 'package:fiander/COMPONENTS/reuseable_widgets.dart';
 import 'package:fiander/CONSTANTS/constants.dart';
+import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/home_screen.dart';
 import 'package:fiander/screens/REGISTRATION%20SCREENS/email_password_screen.dart';
+import 'package:fiander/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import '../onboarding_state.dart';
 import 'basic_info.dart';
 import 'email_veri.dart';
 import 'forgot_password.dart';
-import 'password_create.dart';
 import 'avatar_profile.dart';
 import 'phone_OTP.dart';
 
@@ -58,17 +58,7 @@ class _RegistrationScreensState extends State<RegistrationScreens> {
             right: 0,
             child: Row(
               children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: () {
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                        builder: (context) => const slider(),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(width: 90),
+                const SizedBox(width: 125),
                 SmoothPageIndicator(
                   controller: _controller,
                   count: 4,

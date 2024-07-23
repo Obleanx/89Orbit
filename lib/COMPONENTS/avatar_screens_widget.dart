@@ -1,10 +1,11 @@
 import 'package:fiander/CONSTANTS/constants.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../PROVIDERS/avatar_screen_providers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../SCREENS/REGISTRATION SCREENS/avatar2_screen.dart';
 
 class AvatarSelectionScreen extends StatelessWidget {
   final List<String> avatarImages;
@@ -14,28 +15,65 @@ class AvatarSelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          // elevation: 0,
-          // backgroundColor: Colors.transparent,
-          ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Select your avatar',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-              ),
+            Row(
+              children: [
+                const Text(
+                  'Select your avatar',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                  ),
+                ),
+                const SizedBox(width: 40),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              const MaleAvatarSelectionScreen()),
+                    );
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.blue.withOpacity(0.6), // Glowing color
+                          spreadRadius: 5,
+                          blurRadius: 20,
+                        ),
+                      ],
+                    ),
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const MaleAvatarSelectionScreen()),
+                        );
+                      },
+                      icon: const Icon(Icons.keyboard_arrow_right,
+                          color:
+                              Colors.blue), // Choose the desired icon and color
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
             const Text(
               'choose an avatar that best describes you',
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.grey,
+                color: Colors.black,
               ),
             ),
             const SizedBox(height: 16),
@@ -65,14 +103,15 @@ class AvatarSelectionScreen extends StatelessWidget {
                               .update({'profileImage': avatarImages[index]});
 
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
+                            const SnackBar(
                                 content: Text('Avatar selected and updated')),
                           );
                         }
                       } catch (e) {
                         print('Error updating avatar: $e');
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Failed to update avatar')),
+                          const SnackBar(
+                              content: Text('Failed to update avatar')),
                         );
                       }
                     },
@@ -109,7 +148,7 @@ class AvatarSelectionScreen extends StatelessWidget {
 
                         // Show success message
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
+                          const SnackBar(
                               content:
                                   Text('Profile image updated successfully')),
                         );
@@ -124,14 +163,14 @@ class AvatarSelectionScreen extends StatelessWidget {
                       // Handle any errors
                       print('Error updating profile image: $e');
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
+                        const SnackBar(
                             content: Text('Failed to update profile image')),
                       );
                     }
                   } else {
                     // Handle no avatar selected case
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Please select an avatar')),
+                      const SnackBar(content: Text('Please select an avatar')),
                     );
                   }
                 },

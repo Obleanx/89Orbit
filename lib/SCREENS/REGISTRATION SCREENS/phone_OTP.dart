@@ -1,4 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fiander/COMPONENTS/otp_deletion.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -394,7 +394,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                                 context: context,
                                 barrierDismissible: false,
                                 builder: (BuildContext context) {
-                                  return Center(
+                                  return const Center(
                                     child: CircularProgressIndicator(),
                                   );
                                 },
@@ -438,7 +438,8 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                         try {
                           await _resendOTP();
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("OTP resent successfully")),
+                            const SnackBar(
+                                content: Text("OTP resent successfully")),
                           );
                         } catch (e) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -459,7 +460,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                                 ? Colors.grey
                                 : TextsInsideButtonColor,
                           ),
-                          SizedBox(width: 5),
+                          const SizedBox(width: 5),
                           Text(
                             _isResending ? 'Resending...' : 'Resend Code',
                             style: TextStyle(
