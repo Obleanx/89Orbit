@@ -8,6 +8,12 @@ import 'package:provider/provider.dart';
 import 'PROVIDERS/app_state_provider.dart' as uppercase;
 import 'package:firebase_core/firebase_core.dart';
 import 'PROVIDERS/login_screen_provider.dart';
+import 'PROVIDERS/settings_screen_provider.dart';
+import 'SCREENS/ALL HOME SCREEN/home_screen.dart';
+import 'SCREENS/ALL HOME SCREEN/nav_bar.dart';
+import 'SCREENS/ALL HOME SCREEN/profile_screen.dart';
+import 'SCREENS/ALL HOME SCREEN/settings_screen.dart';
+import 'package:fiander/PROVIDERS/settings_screen_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,10 +46,20 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<AvatarSelectionProvider>(
             create: (_) => AvatarSelectionProvider()),
         ChangeNotifierProvider(create: (_) => AppState()),
+        ChangeNotifierProvider(create: (_) => HomeScreenProvider()),
         ChangeNotifierProvider(
-            create: (_) => HomeScreenProvider()), // Add the new provider here
+          create: (_) => CustomBottomNavigationBarProvider(),
+        ),
+        ChangeNotifierProvider(create: (_) => SettingsProvider()),
+        // Add the new provider here
       ],
       child: MaterialApp(
+        routes: {
+          '/home': (context) => HomeScreen1(),
+          '/events': (context) => EventsScreen(),
+          '/settings': (context) => SettingsScreen(),
+          '/profile': (context) => ProfileScreen(),
+        },
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.blue,

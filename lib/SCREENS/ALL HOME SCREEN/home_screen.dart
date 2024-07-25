@@ -1,6 +1,10 @@
 import 'package:fiander/CONSTANTS/constants.dart';
+import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+
+import 'nav_bar.dart';
+import 'settings_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -10,6 +14,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      routes: {
+        '/home': (context) => HomeScreen1(),
+        '/events': (context) => EventsScreen(),
+        '/settings': (context) => SettingsScreen(),
+        '/profile': (context) => ProfileScreen(),
+      },
       title: 'Sliver Todo App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -218,7 +228,7 @@ class EventDateText extends StatelessWidget {
       child: Text(
         'Sat, Feb 14, 2:00 - 3:00pm',
         style: TextStyle(
-            color: TextsInsideButtonColor,
+            color: Colors.black, //TextsInsideButtonColor,
             fontWeight: FontWeight.bold,
             fontSize: 12),
       ),
@@ -387,38 +397,6 @@ class UpcomingEventCard extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class CustomBottomNavigationBar extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      currentIndex: 0,
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.event),
-          label: 'Events',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.settings),
-          label: 'Settings',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Profile',
-        ),
-      ],
-      onTap: (index) {
-        // TODO: Implement navigation functionality
-        print('Tapped on tab $index');
-      },
     );
   }
 }
