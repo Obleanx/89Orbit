@@ -131,7 +131,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
 
     int retryCount = 0;
     const int maxRetries = 4;
-    const Duration retryDelay = Duration(seconds: 5);
+    const Duration retryDelay = Duration(seconds: 10);
 
     while (retryCount < maxRetries) {
       try {
@@ -146,7 +146,11 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
             return AlertDialog(
               title: const Text('reCAPTCHA Verification'),
               content: const Text(
-                  'You may be prompted to complete a reCAPTCHA verification.'),
+                  'You may be prompted to complete a reCAPTCHA verification. '
+                  'If you encounter any issues, please try the following:\n\n'
+                  '1. Use a web browser (preferably Chrome or Firefox) to complete the verification.\n'
+                  '2. Ensure you have a stable internet connection.\n'
+                  '3. If problems persist, try clearing your browser cache and cookies.'),
               actions: <Widget>[
                 TextButton(
                   child: const Text('OK'),
