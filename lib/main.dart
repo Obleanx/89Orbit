@@ -13,7 +13,6 @@ import 'SCREENS/ALL HOME SCREEN/home_screen.dart';
 import 'SCREENS/ALL HOME SCREEN/nav_bar.dart';
 import 'SCREENS/ALL HOME SCREEN/profile_screen.dart';
 import 'SCREENS/ALL HOME SCREEN/settings_screen.dart';
-import 'package:fiander/PROVIDERS/settings_screen_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

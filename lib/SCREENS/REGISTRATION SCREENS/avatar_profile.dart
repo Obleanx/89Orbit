@@ -1,10 +1,14 @@
 import 'package:fiander/COMPONENTS/avatar_screens_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../onboarding_state.dart'; // Import your screen file
 
 class FemaleAvatarSelectionScreen extends StatelessWidget {
-  const FemaleAvatarSelectionScreen({super.key});
+  final User user;
+
+  const FemaleAvatarSelectionScreen({Key? key, required this.user})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +30,7 @@ class FemaleAvatarSelectionScreen extends StatelessWidget {
         avatarImages:
             //this list method generate the images saved in the emoji folder instead of me typing it manually
             generateAvatarImagePaths('lib/emojis', 15),
+        user: user,
       ),
     );
   }

@@ -1,6 +1,6 @@
 // ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fiander/COMPONENTS/otp_deletion.dart';
+import 'package:fiander/SCREENS/REGISTRATION%20SCREENS/avatar_profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -46,42 +46,60 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
     });
 
     try {
-      print("Fetching user document for UID: ${widget.user.uid}");
+      if (kDebugMode) {
+        print("Fetching user document for UID: ${widget.user.uid}");
+      }
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc(widget.user.uid)
           .get();
 
-      print("User document exists: ${userDoc.exists}");
+      if (kDebugMode) {
+        print("User document exists: ${userDoc.exists}");
+      }
       if (userDoc.exists) {
-        print("Raw data from Firestore: ${userDoc.data()}");
+        if (kDebugMode) {
+          print("Raw data from Firestore: ${userDoc.data()}");
+        }
         String? phoneNumber = userDoc.get('phone') as String?;
-        print("Retrieved phone number: $phoneNumber");
+        if (kDebugMode) {
+          print("Retrieved phone number: $phoneNumber");
+        }
 
         if (phoneNumber != null && phoneNumber.isNotEmpty) {
           phoneNumber = formatToE164(phoneNumber);
-          print("Formatted phone number: $phoneNumber");
+          if (kDebugMode) {
+            print("Formatted phone number: $phoneNumber");
+          }
           setState(() {
             _phoneNumber = phoneNumber;
           });
-          print("_phoneNumber set to: $_phoneNumber");
+          if (kDebugMode) {
+            print("_phoneNumber set to: $_phoneNumber");
+          }
 
           // Automatically start phone verification after fetching the number
           await _verifyPhoneNumber();
         } else {
-          print("Phone number is null or empty");
+          if (kDebugMode) {
+            print("Phone number is null or empty");
+          }
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Phone number is missing or invalid")),
           );
         }
       } else {
-        print("User document does not exist");
+        if (kDebugMode) {
+          print("User document does not exist");
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("User data not found")),
         );
       }
     } catch (e) {
-      print("Error fetching phone number: $e");
+      if (kDebugMode) {
+        print("Error fetching phone number: $e");
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error: $e")),
       );
@@ -94,47 +112,71 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
 
   Future<void> _verifyPhoneNumber() async {
     if (_phoneNumber == null || _phoneNumber!.isEmpty) {
-      print("Error: Phone number is null or empty");
+      if (kDebugMode) {
+        print("Error: Phone number is null or empty");
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Phone number is missing")),
       );
       return;
     }
 
-    print("Attempting to verify phone number: $_phoneNumber");
+    if (kDebugMode) {
+      print("Attempting to verify phone number: $_phoneNumber");
+    }
 
     setState(() {
       _isLoading = true;
     });
 
     int retryCount = 0;
-    const int maxRetries = 3;
+    const int maxRetries = 4;
     const Duration retryDelay = Duration(seconds: 5);
 
     while (retryCount < maxRetries) {
       try {
         // Show message about potential reCAPTCHA
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-                "You may be prompted to complete a reCAPTCHA verification."),
-            duration: Duration(seconds: 5),
-          ),
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            Future.delayed(const Duration(seconds: 5), () {
+              Navigator.of(context).pop(true);
+            });
+            return AlertDialog(
+              title: const Text('reCAPTCHA Verification'),
+              content: const Text(
+                  'You may be prompted to complete a reCAPTCHA verification.'),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
         );
-
         await FirebaseAuth.instance.verifyPhoneNumber(
           phoneNumber: _phoneNumber!,
           verificationCompleted: (PhoneAuthCredential credential) async {
-            print("Verification completed automatically");
+            if (kDebugMode) {
+              print("Verification completed automatically");
+            }
             await _updateUserPhoneNumber(credential);
             _navigateToNewScreen();
           },
           verificationFailed: (FirebaseAuthException e) {
-            print("Verification failed: ${e.message}");
+            if (kDebugMode) {
+              print("Verification failed: ${e.message}");
+            }
             throw e;
           },
           codeSent: (String verificationId, int? resendToken) {
-            print("Verification code sent");
+            if (kDebugMode) {
+              print("Verification code sent");
+            }
             setState(() {
               _verificationId = verificationId;
               _isCodeSent = true;
@@ -142,7 +184,9 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
             });
           },
           codeAutoRetrievalTimeout: (String verificationId) {
-            print("Auto retrieval timeout");
+            if (kDebugMode) {
+              print("Auto retrieval timeout");
+            }
             setState(() {
               _verificationId = verificationId;
               _isLoading = false;
@@ -154,7 +198,9 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
 
         break;
       } catch (e) {
-        print("Error in verifyPhoneNumber: $e");
+        if (kDebugMode) {
+          print("Error in verifyPhoneNumber: $e");
+        }
         retryCount++;
         if (retryCount >= maxRetries) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -164,7 +210,9 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
             ),
           );
         } else {
-          print("Retrying in $retryDelay...");
+          if (kDebugMode) {
+            print("Retrying in $retryDelay...");
+          }
           await Future.delayed(retryDelay);
         }
       }
@@ -176,18 +224,27 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
   }
 
   void _navigateToNewScreen() {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-          builder: (context) => AvatarSelectionScreen(
-                avatarImages: [],
-              )),
-    );
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => FemaleAvatarSelectionScreen(user: currentUser),
+        ),
+      );
+    } else {
+      // Handle the case where there is no current user
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No user is currently signed in')),
+      );
+    }
   }
 
   Future<void> _updateUserPhoneNumber(PhoneAuthCredential credential) async {
     try {
       await FirebaseAuth.instance.currentUser?.updatePhoneNumber(credential);
-      print("Phone number updated successfully in Firebase Auth");
+      if (kDebugMode) {
+        print("Phone number updated successfully in Firebase Auth");
+      }
 
       // Update Firestore to indicate the number is verified
       await FirebaseFirestore.instance
@@ -197,14 +254,18 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
         'phoneVerified': true,
         'phone': _phoneNumber,
       });
-      print("Phone number updated and marked as verified in Firestore");
+      if (kDebugMode) {
+        print("Phone number updated and marked as verified in Firestore");
+      }
 
       // Navigate to next screen or show success message
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Phone number verified successfully")),
       );
     } catch (e) {
-      print("Error updating phone number: $e");
+      if (kDebugMode) {
+        print("Error updating phone number: $e");
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to update phone number: $e")),
       );
@@ -243,6 +304,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
 
     // If it doesn't start with the country code, add it
     if (!digitsOnly.startsWith('234')) {
+      // ignore: prefer_interpolation_to_compose_strings
       digitsOnly = '234' +
           (digitsOnly.startsWith('0') ? digitsOnly.substring(1) : digitsOnly);
     }
@@ -251,45 +313,77 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
     return '+$digitsOnly';
   }
 
+//this function submits the otp back to the cloud
   Future<void> _submitOTP() async {
     String otp = _otpControllers.map((controller) => controller.text).join();
     if (otp.length != 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter a valid 6-digit OTP")),
-      );
+      _showCenterDialog("Error", "Please enter a valid 6-digit OTP");
       return;
     }
 
     try {
-      print("Submitting OTP: $otp");
+      if (kDebugMode) {
+        print("Submitting OTP: $otp");
+      }
       PhoneAuthCredential credential = PhoneAuthProvider.credential(
         verificationId: _verificationId,
         smsCode: otp,
       );
-      print("Credential created");
+      if (kDebugMode) {
+        print("Credential created");
+      }
 
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         throw Exception("No current user found");
       }
 
-      print("Updating phone number for user: ${user.uid}");
+      if (kDebugMode) {
+        print("Updating phone number for user: ${user.uid}");
+      }
       await user.updatePhoneNumber(credential);
-      print("Phone number updated successfully");
+      if (kDebugMode) {
+        print("Phone number updated successfully");
+      }
 
-      // Navigate to the next screen
+      // Show success message
+      await _showCenterDialog("Success", "Phone number verified successfully!");
+
+      // Navigate to the FemaleAvatarSelectionScreen
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => AvatarSelectionScreen(avatarImages: []),
+          builder: (context) => FemaleAvatarSelectionScreen(user: user),
         ),
       );
     } catch (e) {
-      print("Error in _submitOTP: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Verification Failed: $e")),
-      );
+      if (kDebugMode) {
+        print("Error in _submitOTP: $e");
+      }
+      _showCenterDialog("Error", "Verification Failed: $e");
     }
+  }
+
+// Helper function to show dialog in the center
+  Future<void> _showCenterDialog(String title, String message) async {
+    return showDialog(
+      context: context,
+      barrierDismissible: false, // User must tap button to close dialog
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _resendOTP() async {
@@ -385,48 +479,45 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                   const Spacer(),
                   Center(
                     child: ElevatedButton(
-                      onPressed: _isCodeSent && !_isVerifying
-                          ? () async {
-                              setState(() {
-                                _isVerifying = true;
-                              });
-                              showDialog(
-                                context: context,
-                                barrierDismissible: false,
-                                builder: (BuildContext context) {
-                                  return const Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                                },
+                      onPressed: () async {
+                        if (!_isCodeSent) {
+                          // Perform Send OTP function
+                          await _verifyPhoneNumber();
+                        } else if (!_isVerifying) {
+                          // Perform Verify Account function
+                          setState(() {
+                            _isVerifying = true;
+                          });
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
                               );
-                              try {
-                                await _submitOTP();
-                              } finally {
-                                Navigator.of(context)
-                                    .pop(); // Dismiss the loading indicator
-                                setState(() {
-                                  _isVerifying = false;
-                                });
-                              }
-                            }
-                          : null,
+                            },
+                          );
+                          try {
+                            await _submitOTP();
+                          } finally {
+                            Navigator.of(context)
+                                .pop(); // Dismiss the loading indicator
+                            setState(() {
+                              _isVerifying = false;
+                            });
+                          }
+                        }
+                      },
                       style: elevatedButtonDesign,
-                      child: const Text(
-                        'Verify Account',
-                        style: TextStyle(
+                      child: Text(
+                        _isCodeSent ? 'Verify Account' : 'Send OTP',
+                        style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                   ),
-                  if (!_isCodeSent) ...[
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: _verifyPhoneNumber,
-                      child: const Text('Send OTP'),
-                    ),
-                  ],
                   const SizedBox(height: 10),
                   Center(
                     child: GestureDetector(

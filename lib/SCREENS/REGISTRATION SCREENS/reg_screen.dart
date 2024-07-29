@@ -49,8 +49,8 @@ class _RegistrationScreensState extends State<RegistrationScreens> {
                   PhoneVerificationScreen(
                     user: currentUser!,
                   ),
-                const ForgotPasswordScreen(),
-                const FemaleAvatarSelectionScreen(),
+                if (currentUser != null)
+                  FemaleAvatarSelectionScreen(user: currentUser!)
               ]),
           Positioned(
             top: 50.0, // Adjust the top position as needed
