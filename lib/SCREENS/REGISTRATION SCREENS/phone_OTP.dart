@@ -140,7 +140,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
           context: context,
           barrierDismissible: false,
           builder: (BuildContext context) {
-            Future.delayed(const Duration(seconds: 5), () {
+            Future.delayed(const Duration(seconds: 10), () {
               Navigator.of(context).pop(true);
             });
             return AlertDialog(
@@ -512,7 +512,15 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
                           }
                         }
                       },
-                      style: elevatedButtonDesign,
+                      style: ElevatedButton.styleFrom(
+                        elevation: 8.0,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15)),
+                        backgroundColor: TextsInsideButtonColor,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        minimumSize: const Size(100, 30),
+                      ),
                       child: Text(
                         _isCodeSent ? 'Verify Account' : 'Send OTP',
                         style: const TextStyle(

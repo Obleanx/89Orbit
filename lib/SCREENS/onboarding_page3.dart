@@ -66,6 +66,15 @@ class OnboardingPage3 extends StatelessWidget {
                               builder: (context) => LoginWithPhonenumber()),
                         );
                       },
+                      style: ElevatedButton.styleFrom(
+                        elevation: 8.0,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15)),
+                        backgroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        // minimumSize: const Size(100, 30),
+                      ),
                       child: const Text(
                         'Login with phone number',
                         style: TextStyle(

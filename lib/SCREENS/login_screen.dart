@@ -100,8 +100,13 @@ class _LoginWithPhonenumberState extends State<LoginWithPhonenumber> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      minimumSize: const Size.fromHeight(50),
+                      elevation: 8.0,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
                       backgroundColor: TextsInsideButtonColor,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
+                      minimumSize: const Size(140, 40),
                     ),
                     child: const Text(
                       'Login',

@@ -7,6 +7,9 @@ const TextsInsideButtonColor = Color(0xfffb40ad);
 const NormalTextColor = Colors.white;
 // Define the button style constant
 final ButtonStyle elevatedButtonDesign = ElevatedButton.styleFrom(
-  minimumSize: const Size.fromHeight(50), // Customize the size as needed
-  backgroundColor: TextsInsideButtonColor, // Use your predefined color
+  elevation: 8.0,
+  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+  backgroundColor: TextsInsideButtonColor,
+  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+  // minimumSize: const Size(100, 30),
 );

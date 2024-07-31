@@ -2,6 +2,7 @@ import 'package:fiander/COMPONENTS/setting_listitems.dart';
 import 'package:fiander/PROVIDERS/settings_screen_provider.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/about_us.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/faq.dart';
+import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/home_screen.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/how_to_use.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/refund_policy.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/support.dart';
@@ -22,7 +23,12 @@ class SettingsScreen extends StatelessWidget {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    // ignore: prefer_const_constructors
+                    builder: (context) => HomeScreen1(),
+                  ));
             },
           ),
           title: const Text('Settings'),

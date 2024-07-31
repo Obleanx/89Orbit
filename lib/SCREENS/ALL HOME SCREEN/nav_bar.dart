@@ -2,6 +2,7 @@
 // ignore_for_file: depend_on_referenced_packages
 
 import 'package:fiander/CONSTANTS/constants.dart';
+import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/home_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -81,9 +82,21 @@ class EventsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Events')),
-      body: Center(child: Text('Events Screen')),
-      bottomNavigationBar: CustomBottomNavigationBar(),
+      appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    // ignore: prefer_const_constructors
+                    builder: (context) => HomeScreen1(),
+                  ));
+            },
+          ),
+          title: const Text('Events')),
+      body: const Center(child: Text('Events Screen')),
+      bottomNavigationBar: const CustomBottomNavigationBar(),
     );
   }
 }

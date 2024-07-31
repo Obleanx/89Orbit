@@ -1,4 +1,7 @@
+import 'package:fiander/COMPONENTS/join_button.dart';
+import 'package:fiander/COMPONENTS/upcoming_events.dart';
 import 'package:fiander/CONSTANTS/constants.dart';
+import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/join_event.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -16,9 +19,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       routes: {
         '/home': (context) => HomeScreen1(),
-        '/events': (context) => EventsScreen(),
-        '/settings': (context) => SettingsScreen(),
-        '/profile': (context) => ProfileScreen(),
+        '/events': (context) => const EventsScreen(),
+        '/settings': (context) => const SettingsScreen(),
+        '/profile': (context) => const ProfileScreen(),
       },
       title: 'Sliver Todo App',
       theme: ThemeData(
@@ -71,22 +74,16 @@ class HomeScreen1 extends StatelessWidget {
                 EventGrid(),
                 EventGrid(),
                 UpcomingEventsTitle(),
-                const UpcomingEventCard(
-                  date: 'Saturday, April 13th',
-                  time: '2:00-3:00pm',
-                ),
-                const SizedBox(height: 20),
-                const UpcomingEventCard(
-                  date: 'Sunday, April 14th',
-                  time: '4:00-5:00pm',
-                ),
+                SaturdayEventCard(time: '2:00-3:00pm'),
+                const SizedBox(height: 18),
+                SundayEventCard(time: '4:00-5:00pm'),
                 const SizedBox(height: 16),
               ],
             ),
           ),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavigationBar(),
+      bottomNavigationBar: const CustomBottomNavigationBar(),
     );
   }
 }
@@ -260,16 +257,18 @@ class EventGrid extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  height: 200, // Set the height directly
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    image: const DecorationImage(
-                      image: AssetImage('lib/images/event1.jpeg'),
-                      fit: BoxFit.cover,
+                Stack(alignment: Alignment.topRight, children: [
+                  Container(
+                    height: 200, // Set the height directly
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      image: const DecorationImage(
+                        image: AssetImage('lib/images/event1.jpeg'),
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
-                ),
+                ]),
                 EventDateText(),
                 JoinButton(),
               ],
@@ -301,31 +300,6 @@ class EventGrid extends StatelessWidget {
   }
 }
 
-class JoinButton extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {},
-      style: ElevatedButton.styleFrom(
-        backgroundColor: TextsInsideButtonColor, // Background color
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10), // Curved edges
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-        minimumSize: Size(100, 30),
-// Padding
-      ),
-      child: const Text(
-        'Join Event',
-        style: TextStyle(
-          color: Colors.white, // Text color
-          fontWeight: FontWeight.bold, // Text weight
-        ),
-      ),
-    );
-  }
-}
-
 class UpcomingEventsTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -334,68 +308,6 @@ class UpcomingEventsTitle extends StatelessWidget {
       child: Text(
         'Upcoming Events',
         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-      ),
-    );
-  }
-}
-
-class UpcomingEventCard extends StatelessWidget {
-  final String date;
-  final String time;
-
-  const UpcomingEventCard({Key? key, required this.date, required this.time})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color(0xff9e9e9e), // Set the border color to grey
-          width: 1, // Set the border width
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.event,
-                    color: TextsInsideButtonColor, size: 24),
-                const SizedBox(width: 8),
-                Expanded(child: Text(date)),
-                const Spacer(),
-                const Icon(Icons.access_time_outlined,
-                    color: TextsInsideButtonColor, size: 24),
-                const SizedBox(width: 8),
-                Text(time),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: ElevatedButton(
-                onPressed: () {
-                  // TODO: Implement button functionality
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: TextsInsideButtonColor,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  minimumSize: const Size(100, 30),
-                ),
-                child: const Text(
-                  'Register',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
