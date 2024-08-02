@@ -1,3 +1,4 @@
+import 'package:fiander/COMPONENTS/join_button.dart';
 import 'package:fiander/CONSTANTS/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -43,7 +44,11 @@ class UpcomingEventCard extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: ElevatedButton(
                 onPressed: () {
-                  // TODO: Implement button functionality
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EventSelectionDialog(),
+                      ));
                 },
                 style: ElevatedButton.styleFrom(
                   elevation: 8.0,
@@ -89,7 +94,7 @@ class SundayEventCard extends StatelessWidget {
   }
 }
 
-//this method i used it to calculate the date of the upcoming event for just two weeks only.
+//this method i used it to calculate the date of the upcoming event for just one week only.
 String getNextWeekendDate(bool isSaturday) {
   final today = DateTime.now();
   final nextWeekend =
@@ -119,7 +124,7 @@ List<String> getAllUpcomingWeekendDates() {
       final dayNum = DateFormat('d').format(date); // Day of the month
       final suffix =
           getDaySuffix(date.day); // Day suffix (e.g., "st", "nd", "rd", "th")
-      weekends.add("$day, the $month $dayNum$suffix");
+      weekends.add("$day, $month $dayNum$suffix");
     }
     date = date.add(Duration(days: 1));
   }

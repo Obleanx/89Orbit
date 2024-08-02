@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../COMPONENTS/upcoming_events.dart';
+import 'book_event.dart';
 
 class JoinEventScreen extends StatefulWidget {
   final String eventType; // Expecting 'Saturday' or 'Sunday'
@@ -99,15 +100,18 @@ class _JoinEventScreenState extends State<JoinEventScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              height: 200,
-              width: MediaQuery.of(context).size.width,
-              margin: const EdgeInsets.symmetric(horizontal: 5.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                image: const DecorationImage(
-                  image: AssetImage('lib/images/event100.jpeg'),
-                  fit: BoxFit.cover,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                height: 200,
+                width: MediaQuery.of(context).size.width,
+                margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  image: const DecorationImage(
+                    image: AssetImage('lib/images/event100.jpeg'),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
@@ -146,11 +150,21 @@ class _JoinEventScreenState extends State<JoinEventScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(left: 10, top: 10),
-                  child: Text(
-                    'Event Type: $eventType',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black, // Make sure this color is defined
+                  child: Text.rich(
+                    TextSpan(
+                      text: 'Event type :',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.black),
+                      children: [
+                        TextSpan(
+                          // ignore: unnecessary_string_interpolations
+                          text: '  $eventType',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.normal,
+                            color: Colors.blueGrey,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -179,25 +193,25 @@ class _JoinEventScreenState extends State<JoinEventScreen> {
                   ),
                 ),
                 const Padding(
-                  padding: EdgeInsets.only(left: 14.0),
+                  padding: EdgeInsets.only(left: 14.0, right: 10),
                   child: ExpandableText(
                     text:
-                        "Join us for an exciting evening of virtual speed dating! Meet eligible singles from around the world and discover potential matches from the comfort of your home.",
+                        "Join us for an exciting evening of virtual speed dating! Meet eligible singles from around the world and discover potential matches from the comfort of your home.\n\nEnjoy engaging conversations, make new connections, and have a fun, memorable experience that could lead to something special.\n\nOur carefully curated event ensures you meet individuals who share your interests and values.You'll get the chance to interact in a safe and friendly environment, guided by our expert hosts algorithm that will make sure the evening runs smoothly.\n\nTo secure your spot, please complete your payment in advance.This small investment guarantees you a place in this exclusive event and helps us ensure the best experience for all participants.\n\nDon't miss out on this opportunity to meet like-minded people and potentially find your perfect match. Sign up now and get ready for an unforgettable evening!",
                   ),
                 ),
-                UpcomingEventsTitle(),
+                //  UpcomingEventsTitle(),
                 //  SaturdayEventCard(time: '2:00-3:00pm'),
-                const WeekendEventList(
-                  saturdayTime: '2:00-3:00pm',
-                  sundayTime: '4:00-5:00pm',
-                ),
-                const SizedBox(height: 10),
+                //   const WeekendEventList(
+                //    saturdayTime: '2:00-3:00pm',
+                //     sundayTime: '4:00-5:00pm',
+                //   ),
+                //   const SizedBox(height: 10),
                 // SundayEventCard(time: '4:00-5:00pm'),
-                const SizedBox(height: 10),
-                const SaturdayEventCard(time: '4:00-5:00pm'),
+                //    const SizedBox(height: 10),
+                //    const SaturdayEventCard(time: '4:00-5:00pm'),
               ],
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 10),
             Center(
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 50),
@@ -207,7 +221,7 @@ class _JoinEventScreenState extends State<JoinEventScreen> {
                         context,
                         MaterialPageRoute(
                           // ignore: prefer_const_constructors
-                          builder: (context) => PayForEventScreen(),
+                          builder: (context) => EventAccessScreen(),
                         ));
                   },
                   style: ElevatedButton.styleFrom(

@@ -1,3 +1,4 @@
+import 'package:fiander/COMPONENTS/event_text.dart';
 import 'package:fiander/COMPONENTS/join_button.dart';
 import 'package:fiander/COMPONENTS/upcoming_events.dart';
 import 'package:fiander/CONSTANTS/constants.dart';
@@ -70,14 +71,18 @@ class HomeScreen1 extends StatelessWidget {
                 const SizedBox(height: 10),
                 CarouselSection(),
                 EventDateText(),
+                //const SaturdayEventDateText(eventTime: '2:00 - 3:00pm'),
                 AvailableEventsTitle(),
                 EventGrid(),
                 EventGrid(),
                 UpcomingEventsTitle(),
-                SaturdayEventCard(time: '2:00-3:00pm'),
-                const SizedBox(height: 18),
-                SundayEventCard(time: '4:00-5:00pm'),
-                const SizedBox(height: 16),
+                const WeekendEventList(
+                  saturdayTime: '2:00-3:00pm',
+                  sundayTime: '4:00-5:00pm',
+                ),
+                // const SaturdayEventCard(time: '2:00-3:00pm'),
+                // const SizedBox(height: 18),
+                // const SundayEventCard(time: '4:00-5:00pm'),
               ],
             ),
           ),
@@ -223,9 +228,9 @@ class EventDateText extends StatelessWidget {
     return const Padding(
       padding: EdgeInsets.only(left: 15, top: 5),
       child: Text(
-        'Sat, Feb 14, 2:00 - 3:00pm',
+        'Sat and Sundays  2:00 - 5:00pm',
         style: TextStyle(
-            color: Colors.black, //TextsInsideButtonColor,
+            color: Colors.black26, //TextsInsideButtonColor,
             fontWeight: FontWeight.bold,
             fontSize: 12),
       ),
@@ -269,7 +274,8 @@ class EventGrid extends StatelessWidget {
                     ),
                   ),
                 ]),
-                EventDateText(),
+                //  EventDateText(),
+                const SaturdayEventDateText(eventTime: '2:00 - 3:00pm'),
                 JoinButton(),
               ],
             ),
@@ -289,7 +295,8 @@ class EventGrid extends StatelessWidget {
                     ),
                   ),
                 ),
-                EventDateText(),
+                //  EventDateText(),
+                const SundayEventDateText(eventTime: '4:00 - 5:00pm'),
                 JoinButton(),
               ],
             ),
