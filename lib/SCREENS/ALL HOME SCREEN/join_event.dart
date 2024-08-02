@@ -1,20 +1,18 @@
 import 'package:fiander/COMPONENTS/exp_texts.dart';
 import 'package:fiander/CONSTANTS/constants.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/home_screen.dart';
-import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/payment.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
-import '../../COMPONENTS/upcoming_events.dart';
-import 'book_event.dart';
+import 'pay_popup.dart';
+import 'tailored_pay_pop.dart';
 
 class JoinEventScreen extends StatefulWidget {
   final String eventType; // Expecting 'Saturday' or 'Sunday'
   final String selectedDate;
   final String selectedTime;
 
-  const JoinEventScreen({
+  JoinEventScreen({
     Key? key,
     required this.eventType,
     required this.selectedDate,
@@ -36,6 +34,48 @@ class _JoinEventScreenState extends State<JoinEventScreen> {
     eventType = widget.eventType;
     selectedDate = widget.selectedDate;
     selectedTime = widget.selectedTime;
+  }
+
+  //this code below allow the pop to check first if the user selected a general or tailored event before showing for making payments.
+  void _showEventAccessScreen(BuildContext context, String eventType) {
+    if (kDebugMode) {
+      print("Event type: $eventType");
+    } // Debug print
+
+    showDialog(
+      context: context,
+      barrierDismissible: true, // Allows dismissing by tapping outside
+      barrierColor:
+          Colors.black.withOpacity(0.6), // Semi-transparent background
+      builder: (BuildContext context) {
+        if (eventType.trim().toLowerCase() == 'general') {
+          if (kDebugMode) {
+            print("Showing General Event Screen");
+          }
+          return const GeneralEventAccessScreen();
+        } else if (eventType.trim().toLowerCase() == 'tailored') {
+          if (kDebugMode) {
+            print("Showing Tailored Event Screen");
+          }
+          return const TailoredEventAccessScreen();
+        } else {
+          if (kDebugMode) {
+            print("Unknown event type: $eventType");
+          }
+          // Handle unknown event type
+          return AlertDialog(
+            title: const Text("Error"),
+            content: Text("Unknown event type: $eventType"),
+            actions: [
+              TextButton(
+                child: const Text("OK"),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ],
+          );
+        }
+      },
+    );
   }
 
   String getNextWeekendDate(String selectedTimeOption) {
@@ -217,12 +257,10 @@ class _JoinEventScreenState extends State<JoinEventScreen> {
                 padding: const EdgeInsets.only(bottom: 50),
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          // ignore: prefer_const_constructors
-                          builder: (context) => EventAccessScreen(),
-                        ));
+                    if (kDebugMode) {
+                      print("Button pressed. Current event type: $eventType");
+                    }
+                    _showEventAccessScreen(context, eventType);
                   },
                   style: ElevatedButton.styleFrom(
                     elevation: 8.0,

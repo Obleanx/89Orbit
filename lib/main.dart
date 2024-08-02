@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:fiander/PROVIDERS/avatar_screen_providers.dart';
 import 'package:fiander/PROVIDERS/home_screen_provider.dart';
+import 'package:fiander/PROVIDERS/pay_popup_provider.dart';
 import 'package:fiander/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -50,6 +51,8 @@ class MyApp extends StatelessWidget {
           create: (_) => CustomBottomNavigationBarProvider(),
         ),
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
+        ChangeNotifierProvider(create: (_) => EventAccessNotifier()),
+
         // Add the new provider here
       ],
       child: MaterialApp(

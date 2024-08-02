@@ -82,6 +82,7 @@ class _EventSelectionDialogState extends State<EventSelectionDialog> {
 
   Widget _buildEventOption(String eventType) {
     bool isSelected = selectedEvent == eventType;
+
     return GestureDetector(
       onTap: () {
         setState(() {
