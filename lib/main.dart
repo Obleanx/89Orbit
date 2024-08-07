@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'PROVIDERS/app_state_provider.dart' as uppercase;
 import 'package:firebase_core/firebase_core.dart';
+import 'PROVIDERS/atm_idetails.dart';
 import 'PROVIDERS/login_screen_provider.dart';
 import 'PROVIDERS/settings_screen_provider.dart';
 import 'SCREENS/ALL HOME SCREEN/home_screen.dart';
@@ -17,6 +18,7 @@ import 'SCREENS/ALL HOME SCREEN/settings_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
       options: const FirebaseOptions(
     apiKey: "AIzaSyBH4OdG3YKIP1JipJTW6VXqcKgZLe5aB_Y",
@@ -52,15 +54,16 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
         ChangeNotifierProvider(create: (_) => EventAccessNotifier()),
+        ChangeNotifierProvider(create: (_) => CardProvider()),
 
         // Add the new provider here
       ],
       child: MaterialApp(
         routes: {
           '/home': (context) => HomeScreen1(),
-          '/events': (context) => EventsScreen(),
-          '/settings': (context) => SettingsScreen(),
-          '/profile': (context) => ProfileScreen(),
+          '/events': (context) => const EventsScreen(),
+          '/settings': (context) => const SettingsScreen(),
+          '/profile': (context) => const ProfileScreen(),
         },
         debugShowCheckedModeBanner: false,
         theme: ThemeData(

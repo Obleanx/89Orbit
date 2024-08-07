@@ -1,4 +1,5 @@
 import 'package:fiander/CONSTANTS/constants.dart';
+import 'package:fiander/PAYMENT%20SCREENS/card_inputs.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../PROVIDERS/userdetail_provider.dart';
@@ -75,7 +76,11 @@ class UserPreferencesScreen extends StatelessWidget {
                 Center(
                   child: ElevatedButton(
                     onPressed: () {
-                      // Handle button press
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AtmCardScreen()),
+                      );
                     },
                     child: const Text('Continue'),
                   ),
