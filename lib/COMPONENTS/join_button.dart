@@ -121,7 +121,7 @@ class _EventSelectionDialogState extends State<EventSelectionDialog> {
   void _showTimeSelectionDialog(BuildContext context, String eventType) {
     showDialog(
       context: context,
-      barrierColor: Colors.grey
+      barrierColor: Colors.blueGrey
           .withOpacity(0.6), //blur effect for the second pop message.
       builder: (BuildContext context) {
         return TimeSelectionDialog(eventType: eventType);

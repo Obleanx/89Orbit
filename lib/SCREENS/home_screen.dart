@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'onboarding_state.dart';
 
 class HomeScreen extends StatelessWidget {

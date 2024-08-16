@@ -72,6 +72,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'com.google.firebase:firebase-auth:21.2.0'
     implementation 'com.google.android.gms:play-services-auth:20.4.0' // For Google Sign-In
+   // implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+
    
     // Add your other dependencies here
 }

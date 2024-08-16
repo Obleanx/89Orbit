@@ -44,13 +44,20 @@ dependencies:
   path: ^1.8.0
   uni_links: ^0.5.1
   carousel_slider: ^4.2.1
-  pay_with_paystack: ^1.0.10  
+  pay_with_paystack: ^1.0.10
+  flutter_spinkit: ^5.2.1
+  permission_handler: ^11.3.1
+  zego_uikit_prebuilt_call: ^4.9.0
+
+
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   google_fonts: ^5.1.0
   provider: ^6.1.2
+
   
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -62,6 +69,10 @@ dev_dependencies:
 dependency_overrides:
   web: 0.3.0
   foo: 0.0.1
+  webview_flutter_wkwebview: 3.9.2
+
+
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

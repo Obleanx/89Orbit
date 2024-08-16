@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -17,11 +18,11 @@ class _AtmCardScreenState extends State<AtmCardScreen> {
     PayWithPayStack().now(
       context: context,
       //  secretKey: 'pk_test_de51f82ca89566c04d71f6a105489279109f882a',
-      secretKey: 'pk_test_de51f82ca89566c04d71f6a105489279109f882a',
+      secretKey: 'sk_test_51c1d0389dc99942929baeed8e28f79c72fc5206',
       customerEmail: "adamobonyilo@gmail.com",
       reference: DateTime.now().millisecondsSinceEpoch.toString(),
       currency: 'NGN',
-      amount: 10000, // Amount in kobo (100 NGN)
+      amount: 1000, // Amount in kobo (100 NGN)
       metaData: {
         'custom_fields': [
           {
@@ -33,21 +34,36 @@ class _AtmCardScreenState extends State<AtmCardScreen> {
       },
       callbackUrl: '',
       transactionCompleted: () {
-        print('Payment successful');
+        if (kDebugMode) {
+          print('Payment successful');
+        }
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Payment successful')),
+          const SnackBar(content: Text('Payment successful')),
         );
         // Handle successful payment
       },
       transactionNotCompleted: () {
-        print('Payment not completed');
+        if (kDebugMode) {
+          print('Payment not completed');
+        }
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Payment not completed')),
+          const SnackBar(content: Text('Payment not completed')),
         );
         // Handle payment not completed
       },
     );
   }
+
+  // void _checkpayment() {
+  // try {
+  // PayStackManager(context: context)
+
+  // } catch (error) {
+  // if (kDebugMode) {
+  // print("payment error ==$error");
+  // }
+  // }
+  // }
 
   @override
   Widget build(BuildContext context) {

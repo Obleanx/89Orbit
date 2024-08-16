@@ -45,5 +45,17 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+		<!-- Microphone Usage Permission -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This application needs access to your microphone for calls</string>   	
+    <key>NSCameraUsageDescription</key>
+    <string>Camera is required to make video calls</string>
+
+	<!-- VoIP Background Mode -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>voip</string>
+	</array>
+
 </dict>
 </plist>

@@ -50,8 +50,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AppState()),
         ChangeNotifierProvider(create: (_) => HomeScreenProvider()),
         ChangeNotifierProvider(
-          create: (_) => CustomBottomNavigationBarProvider(),
-        ),
+            create: (_) => CustomBottomNavigationBarProvider()),
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
         ChangeNotifierProvider(create: (_) => EventAccessNotifier()),
         ChangeNotifierProvider(create: (_) => CardProvider()),
@@ -81,3 +80,6 @@ class MyApp extends StatelessWidget {
               //physics: const NeverScrollableScrollPhysics(), // Disable sliding
               //physics: const NeverScrollableScrollPhysics(), // Disable sliding
 //add it in the page view of smooth page indicator
+
+
+//api-node2.voximplant.com

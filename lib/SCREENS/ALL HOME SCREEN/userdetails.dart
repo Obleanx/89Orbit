@@ -1,4 +1,5 @@
 import 'package:fiander/CONSTANTS/constants.dart';
+import 'package:fiander/DAting%20events%20screens/finding_date.dart';
 import 'package:fiander/PAYMENT%20SCREENS/card_inputs.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -79,7 +80,8 @@ class UserPreferencesScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => AtmCardScreen()),
+                            builder: (context) =>
+                                FindingDateLoadingScreen()), //AtmCardScreen
                       );
                     },
                     child: const Text('Continue'),
