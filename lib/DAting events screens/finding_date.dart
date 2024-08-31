@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
+import '../ZegoCloud/call screen.dart';
 import 'incomingc-_call.dart';
 import 'pop_messages.dart';
 
@@ -98,19 +99,24 @@ class FindingDateLoadingScreen extends StatelessWidget {
                         ),
                       )),
                   ElevatedButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => IncomingCallScreen(),
-                        );
-                      },
-                      style: elevatedButtonDesign,
-                      child: const Text(
-                        "Next",
-                        style: TextStyle(
-                          color: Colors.white,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CallPage(
+                            callID: '',
+                          ),
                         ),
-                      )),
+                      );
+                    },
+                    style: elevatedButtonDesign,
+                    child: const Text(
+                      "Next",
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  )
                 ],
               )
             ],

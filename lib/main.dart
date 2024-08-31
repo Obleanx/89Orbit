@@ -1,13 +1,13 @@
-import 'dart:io';
-import 'package:fiander/PROVIDERS/avatar_screen_providers.dart';
-import 'package:fiander/PROVIDERS/home_screen_provider.dart';
-import 'package:fiander/PROVIDERS/pay_popup_provider.dart';
-import 'package:fiander/screens/home_screen.dart';
+import 'package:fiander/SCREENS/home_screen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'PROVIDERS/app_state_provider.dart' as uppercase;
 import 'package:firebase_core/firebase_core.dart';
+import 'PROVIDERS/app_state_provider.dart' as uppercase;
+import 'PROVIDERS/avatar_screen_providers.dart';
+import 'PROVIDERS/home_screen_provider.dart';
+import 'PROVIDERS/pay_popup_provider.dart';
 import 'PROVIDERS/atm_idetails.dart';
 import 'PROVIDERS/login_screen_provider.dart';
 import 'PROVIDERS/settings_screen_provider.dart';
@@ -18,23 +18,29 @@ import 'SCREENS/ALL HOME SCREEN/settings_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await Firebase.initializeApp(
-      options: const FirebaseOptions(
-    apiKey: "AIzaSyBH4OdG3YKIP1JipJTW6VXqcKgZLe5aB_Y",
-    appId: "1:328467516650:android:ef76a807ec69df1dc6db93",
-    messagingSenderId: "328467516650",
-    projectId: "fianderapp",
-  ));
-
-  // Initialize Firebase based on the operating system of the devices
-  if (Platform.isAndroid ||
-      Platform.isIOS ||
-      Platform.isLinux ||
-      Platform.isMacOS ||
-      Platform.isWindows) {}
-
+  await initializeFirebase();
   runApp(const MyApp());
+}
+
+Future<void> initializeFirebase() async {
+  try {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: "AIzaSyBH4OdG3YKIP1JipJTW6VXqcKgZLe5aB_Y",
+        appId: "1:328467516650:android:ef76a807ec69df1dc6db93",
+        messagingSenderId: "328467516650",
+        projectId: "fianderapp",
+      ),
+    );
+    if (kDebugMode) {
+      print("Firebase initialized successfully");
+    }
+  } catch (e) {
+    if (kDebugMode) {
+      print("Error initializing Firebase: $e");
+    }
+    // You might want to show an error dialog or handle this error appropriately
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -54,8 +60,6 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
         ChangeNotifierProvider(create: (_) => EventAccessNotifier()),
         ChangeNotifierProvider(create: (_) => CardProvider()),
-
-        // Add the new provider here
       ],
       child: MaterialApp(
         routes: {
@@ -76,10 +80,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-              //physics: const NeverScrollableScrollPhysics(), // Disable sliding
-              //physics: const NeverScrollableScrollPhysics(), // Disable sliding
-              //physics: const NeverScrollableScrollPhysics(), // Disable sliding
-//add it in the page view of smooth page indicator
-
-
-//api-node2.voximplant.com
