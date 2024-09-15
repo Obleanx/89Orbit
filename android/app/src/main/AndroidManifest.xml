@@ -16,24 +16,22 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
+        
         android:label="fiander"
-        android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         tools:node="replace">
+        
+        <!-- Keep the WorkManagerInitializer for Firebase -->
+        <provider
+            android:name="androidx.work.impl.WorkManagerInitializer"
+            android:authorities="${applicationId}.workmanager-init"
+            android:enabled="true"   
+            android:exported="false" />
 
         <receiver
             android:name="com.hiennv.flutter_callkit_incoming.CallkitIncomingBroadcastReceiver"
             android:exported="${callkitIncomingBroadcastReceiverExported}"
             tools:replace="android:exported" />
-
-        <!-- Remove this receiver if it's not needed -->
-        <!--
-        <receiver
-            android:name=".YourReceiverClassName"
-            android:exported="false"
-            tools:replace="android:exported">
-        </receiver>
-        -->
 
         <meta-data
             android:name="com.google.android.gms.version"

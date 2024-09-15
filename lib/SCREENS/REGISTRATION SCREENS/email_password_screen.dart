@@ -1,13 +1,12 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'package:fiander/COMPONENTS/reuseable_widgets.dart';
 import 'package:fiander/PROVIDERS/email_password_provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../CONSTANTS/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
 import 'basic_info.dart';
 
 class EmailandPassword extends StatelessWidget {
@@ -150,6 +149,7 @@ class _EmailandPasswordContent extends StatelessWidget {
 
   Widget _buildPasswordValidationIndicators(BuildContext context) {
     final provider = Provider.of<EmailPasswordProvider>(context);
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -178,7 +178,6 @@ class _EmailandPasswordContent extends StatelessWidget {
 
   Widget _buildNextButton(BuildContext context) {
     final provider = Provider.of<EmailPasswordProvider>(context);
-
     Future<void> createAccountAndNavigate() async {
       try {
         // Show loading indicator
@@ -192,7 +191,7 @@ class _EmailandPasswordContent extends StatelessWidget {
                   const CircularProgressIndicator(),
                   Container(
                     margin: const EdgeInsets.only(left: 7),
-                    child: const Text("Loading..."),
+                    child: const Text("Creating account..."),
                   ),
                 ],
               ),
@@ -203,9 +202,16 @@ class _EmailandPasswordContent extends StatelessWidget {
         // Create user account
         UserCredential userCredential =
             await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: provider.emailController.text,
+          email: provider.emailController.text.trim(),
           password: provider.password,
         );
+
+        if (kDebugMode) {
+          print("User creation successful: ${userCredential.user?.uid}");
+        }
+
+        // Add a small delay to ensure the dialog shows up
+        await Future.delayed(const Duration(milliseconds: 500));
 
         // Close loading indicator
         Navigator.of(context).pop();
@@ -213,13 +219,16 @@ class _EmailandPasswordContent extends StatelessWidget {
         if (userCredential.user != null) {
           // Navigate to the next screen and pass the user object
           Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) => BsicInfoScreen(
-                user: userCredential.user!), // Pass the user object
+            builder: (context) => BsicInfoScreen(user: userCredential.user!),
           ));
         }
       } on FirebaseAuthException catch (e) {
         // Close loading indicator
         Navigator.of(context).pop();
+
+        if (kDebugMode) {
+          print("FirebaseAuthException: ${e.message}");
+        }
 
         // Show error message when users try to create account.
         showDialog(
@@ -232,9 +241,32 @@ class _EmailandPasswordContent extends StatelessWidget {
               actions: <Widget>[
                 TextButton(
                   child: const Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            );
+          },
+        );
+      } catch (e) {
+        // Close loading indicator
+        Navigator.of(context).pop();
+
+        if (kDebugMode) {
+          print("Unexpected error: $e");
+        }
+
+        // Show error message for unexpected errors
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Account Creation Failed'),
+              content:
+                  const Text('An unexpected error occurred. Please try again.'),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () => Navigator.of(context).pop(),
                 ),
               ],
             );
@@ -260,9 +292,7 @@ class _EmailandPasswordContent extends StatelessWidget {
                       actions: <Widget>[
                         TextButton(
                           child: const Text('OK'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
+                          onPressed: () => Navigator.of(context).pop(),
                         ),
                       ],
                     );
@@ -270,8 +300,9 @@ class _EmailandPasswordContent extends StatelessWidget {
                 );
               },
         style: ElevatedButton.styleFrom(
-            minimumSize: const Size.fromHeight(50),
-            backgroundColor: TextsInsideButtonColor),
+          minimumSize: const Size.fromHeight(50),
+          backgroundColor: TextsInsideButtonColor,
+        ),
         child: const Text(
           'Next',
           style: TextStyle(

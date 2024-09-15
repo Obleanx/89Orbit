@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyADTvsQ5tOwBBvBkUnwFFt2qSW9kAJzVts</string>
+	<string>AIzaSyBfK6h8JbtHrJaqpAVRJgsVZA9iF4ZDroI</string>
 	<key>GCM_SENDER_ID</key>
-	<string>328467516650</string>
+	<string>1009241858448</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.fiander</string>
+	<string>com.example.fiander.RunnerTests</string>
 	<key>PROJECT_ID</key>
-	<string>fianderapp</string>
+	<string>fiander</string>
 	<key>STORAGE_BUCKET</key>
-	<string>fianderapp.appspot.com</string>
+	<string>fiander.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:328467516650:ios:216360728e41f812c6db93</string>
+	<string>1:1009241858448:ios:5dee08a818a3a144d95315</string>
 </dict>
 </plist>

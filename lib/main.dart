@@ -1,14 +1,18 @@
-import 'package:fiander/SCREENS/home_screen.dart';
+import 'dart:io';
+import 'package:fiander/PROVIDERS/atm_idetails.dart';
+import 'package:fiander/PROVIDERS/avatar_screen_providers.dart';
+import 'package:fiander/PROVIDERS/home_screen_provider.dart';
+import 'package:fiander/PROVIDERS/pay_popup_provider.dart';
+import 'package:fiander/SCREENS/login_screen.dart';
+import 'package:fiander/firebase_options.dart';
+import 'package:fiander/screens/home_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'PROVIDERS/app_state_provider.dart' as uppercase;
-import 'PROVIDERS/avatar_screen_providers.dart';
-import 'PROVIDERS/home_screen_provider.dart';
-import 'PROVIDERS/pay_popup_provider.dart';
-import 'PROVIDERS/atm_idetails.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'PROVIDERS/login_screen_provider.dart';
 import 'PROVIDERS/settings_screen_provider.dart';
 import 'SCREENS/ALL HOME SCREEN/home_screen.dart';
@@ -18,38 +22,30 @@ import 'SCREENS/ALL HOME SCREEN/settings_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initializeFirebase();
+
+  await Firebase.initializeApp(
+    options: Platform.isAndroid
+        ? const FirebaseOptions(
+            apiKey: "AIzaSyBH4OdG3YKIP1JipJTW6VXqcKgZLe5aB_Y",
+            appId: "1:328467516650:android:ef76a807ec69df1dc6db93",
+            messagingSenderId: "328467516650",
+            projectId: "fianderapp",
+            storageBucket: "fianderapp.appspot.com",
+          )
+        : null,
+  );
+
   runApp(const MyApp());
 }
 
-Future<void> initializeFirebase() async {
-  try {
-    await Firebase.initializeApp(
-      options: const FirebaseOptions(
-        apiKey: "AIzaSyBH4OdG3YKIP1JipJTW6VXqcKgZLe5aB_Y",
-        appId: "1:328467516650:android:ef76a807ec69df1dc6db93",
-        messagingSenderId: "328467516650",
-        projectId: "fianderapp",
-      ),
-    );
-    if (kDebugMode) {
-      print("Firebase initialized successfully");
-    }
-  } catch (e) {
-    if (kDebugMode) {
-      print("Error initializing Firebase: $e");
-    }
-    // You might want to show an error dialog or handle this error appropriately
-  }
-}
-
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        // Your providers here
         ChangeNotifierProvider(create: (_) => uppercase.AppStateProvider()),
         ChangeNotifierProvider<AvatarSelectionProvider>(
             create: (_) => AvatarSelectionProvider()),
@@ -62,12 +58,6 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CardProvider()),
       ],
       child: MaterialApp(
-        routes: {
-          '/home': (context) => HomeScreen1(),
-          '/events': (context) => const EventsScreen(),
-          '/settings': (context) => const SettingsScreen(),
-          '/profile': (context) => const ProfileScreen(),
-        },
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.blue,
@@ -76,7 +66,19 @@ class MyApp extends StatelessWidget {
           ),
         ),
         home: HomeScreenLoader(),
+        routes: {
+          '/home': (context) => HomeScreen1(),
+          '/events': (context) => const EventsScreen(),
+          '/settings': (context) => const SettingsScreen(),
+          '/profile': (context) => const ProfileScreen(),
+        },
       ),
     );
   }
 }
+         //physics: const NeverScrollableScrollPhysics(), // Disable sliding
+              //physics: const NeverScrollableScrollPhysics(), // Disable sliding
+              //physics: const NeverScrollableScrollPhysics(), // Disable sliding
+//add it in the page view of smooth page indicator
+
+
