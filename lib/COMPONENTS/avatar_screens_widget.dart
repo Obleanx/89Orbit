@@ -1,18 +1,16 @@
 import 'package:fiander/CONSTANTS/constants.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/home_screen.dart';
+import 'package:fiander/SUPABASE/male_dp.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../PROVIDERS/avatar_screen_providers.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-import '../SCREENS/REGISTRATION SCREENS/avatar2_screen.dart';
 
 class AvatarSelectionScreen extends StatelessWidget {
   final List<String> avatarImages;
-  final User user;
 
-  AvatarSelectionScreen({required this.avatarImages, required this.user});
+  AvatarSelectionScreen({
+    required this.avatarImages,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,36 +32,12 @@ class AvatarSelectionScreen extends StatelessWidget {
                 const SizedBox(width: 40),
                 GestureDetector(
                   onTap: () {
-                    final currentUser = FirebaseAuth.instance.currentUser;
-                    if (currentUser != null) {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              MaleAvatarSelectionScreen(user: currentUser),
-                        ),
-                      );
-                    } else {
-                      // Handle the case where there is no current user
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text('Error'),
-                            content:
-                                const Text('No user is currently signed in'),
-                            actions: <Widget>[
-                              TextButton(
-                                child: const Text('OK'),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    }
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MaleProfilePicture(),
+                      ),
+                    );
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -77,42 +51,9 @@ class AvatarSelectionScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: IconButton(
-                      onPressed: () {
-                        final currentUser = FirebaseAuth.instance.currentUser;
-                        if (currentUser != null) {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  MaleAvatarSelectionScreen(user: currentUser),
-                            ),
-                          );
-                        } else {
-                          // Handle the case where there is no current user
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text('Error'),
-                                content: const Text(
-                                    'No user is currently signed in'),
-                                actions: <Widget>[
-                                  TextButton(
-                                    child: const Text('OK'),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        }
-                      },
-                      icon: const Icon(Icons.keyboard_arrow_right,
-                          color:
-                              Colors.blue), // Choose the desired icon and color
+                    child: const Icon(
+                      Icons.keyboard_arrow_right,
+                      color: Colors.blue,
                     ),
                   ),
                 ),
@@ -120,7 +61,7 @@ class AvatarSelectionScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              'choose an avatar that best describes you',
+              'Choose an avatar that best describes you',
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.black,
@@ -182,41 +123,33 @@ class AvatarSelectionScreen extends StatelessWidget {
                     );
 
                     try {
-                      User? user = FirebaseAuth.instance.currentUser;
-                      if (user != null) {
-                        await FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(user.uid)
-                            .update({'profileImage': selectedAvatar});
+                      // You can now perform an action based on the selected avatar,
+                      // or navigate to another screen.
 
-                        // Dismiss loading indicator
-                        Navigator.of(context).pop();
+                      // Dismiss loading indicator
+                      Navigator.of(context).pop();
 
-                        // Show success message
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content:
-                                  Text('Profile image updated successfully')),
-                        );
+                      // Show success message
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('Avatar selected successfully')),
+                      );
 
-                        // Navigate to home screen
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  HomeScreen1()), // Replace with your actual home screen
-                        );
-                      } else {
-                        throw Exception('No user logged in');
-                      }
+                      // Navigate to home screen or any other screen
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                HomeScreen1()), // Update this route
+                      );
                     } catch (e) {
                       // Dismiss loading indicator
                       Navigator.of(context).pop();
 
                       // Show error message
-                      print('Error updating profile image: $e');
+                      print('Error: $e');
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                            content: Text('Failed to update profile image')),
+                            content: Text('Failed to select avatar')),
                       );
                     }
                   } else {

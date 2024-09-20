@@ -10,10 +10,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class BsicInfoScreen extends StatefulWidget {
-  final User user;
+  //final User? user; // Nullable User object
+  final Function(User?) setCurrentUser; // Function to set the current user
 
-  const BsicInfoScreen({Key? key, required this.user})
-      : super(key: key); // Update the constructor
+  BsicInfoScreen({Key? key, required this.setCurrentUser})
+      : super(key: key); // Accept the user and setCurrentUser
 
   @override
   _BsicInfoScreenState createState() => _BsicInfoScreenState();
@@ -35,61 +36,6 @@ class _BsicInfoScreenState extends State<BsicInfoScreen> {
     _residenceController.dispose();
     _phonenumberController.dispose();
     super.dispose();
-  }
-
-  Future<void> _saveUserData() async {
-    {
-      // Show loading indicator
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            content: Row(
-              children: [
-                const CircularProgressIndicator(),
-                Container(
-                    margin: const EdgeInsets.only(left: 7),
-                    child: const Text("Loading...")),
-              ],
-            ),
-          );
-        },
-      );
-
-      try {
-        // Add user details to Firestore
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(widget.user.uid)
-            .set({
-          'name': _nameController.text,
-          'email': widget.user.email,
-          'dob': _dobController.text,
-          'gender': _selectedGender,
-          'residence': _residenceController.text,
-          'phone': _phoneNumber,
-          'isVerified': true,
-        });
-        await widget.user.sendEmailVerification();
-
-        Navigator.pop(context); // Close the loading dialog
-
-        // Navigate to the email verification screen
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EmailVerificationScreen(
-              user: widget.user,
-            ),
-          ),
-        );
-      } catch (e) {
-        Navigator.pop(context);
-
-        // Show error message
-      }
-    }
   }
 
   @override
@@ -244,7 +190,7 @@ class _BsicInfoScreenState extends State<BsicInfoScreen> {
                           ),
                           onPressed: () {
                             try {
-                              _saveUserData();
+                              // _saveUserData();
                             } catch (e, stackTrace) {
                               if (kDebugMode) {
                                 print('Network error');

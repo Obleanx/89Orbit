@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class EmailPasswordProvider extends ChangeNotifier {
+class CreateAccountProvider extends ChangeNotifier {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
@@ -15,14 +15,22 @@ class EmailPasswordProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  String _email = '';
+  String _password = '';
+
+  String get email => _email;
+  String get password => _password;
+
+  // Add methods to set email and password, and other logic.
+
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
-  String _password = '';
+  //String _password = '';
   String _confirmPassword = '';
 
   bool get isPasswordVisible => _isPasswordVisible;
   bool get isConfirmPasswordVisible => _isConfirmPasswordVisible;
-  String get password => _password;
+  //String get password => _password;
   String get confirmPassword => _confirmPassword;
 
   get phoneNumberController => null;

@@ -8,7 +8,10 @@ import '../../COMPONENTS/reuseable_widgets.dart';
 class EmailVerificationScreen extends StatefulWidget {
   final User user;
 
-  const EmailVerificationScreen({Key? key, required this.user})
+  const EmailVerificationScreen(
+      {Key? key,
+      required this.user,
+      required void Function(User? user) setCurrentUser})
       : super(key: key);
 
   @override

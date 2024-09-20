@@ -1,16 +1,107 @@
 // ignore_for_file: use_build_context_synchronously
+import 'dart:async';
 import 'package:fiander/COMPONENTS/reuseable_widgets.dart';
 import 'package:fiander/PROVIDERS/email_password_provider.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:fiander/SCREENS/REGISTRATION%20SCREENS/basic_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uni_links2/uni_links.dart';
 import '../../CONSTANTS/constants.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'basic_info.dart';
 
-class EmailandPassword extends StatelessWidget {
-  const EmailandPassword({Key? key, required setCurrentUser}) : super(key: key);
+class EmailandPassword extends StatefulWidget {
+  //final Function setCurrentUser;
+
+  @override
+  _EmailandPasswordState createState() => _EmailandPasswordState();
+}
+
+class _EmailandPasswordState extends State<EmailandPassword> {
+  StreamSubscription? _sub;
+  bool accountVerified = false; // To track if account is verified via deep link
+  late final StreamSubscription<AuthState> _authSubscriptions;
+
+  @override
+  void initState() {
+    super.initState();
+
+    handleInitialDeepLink();
+    _sub = uriLinkStream.listen((Uri? uri) {
+      if (uri != null && uri.host == 'email-verification') {
+        handleEmailVerification(uri);
+      }
+    });
+  }
+
+  Future<void> handleInitialDeepLink() async {
+    final initialUri = await getInitialUri();
+    if (initialUri != null && initialUri.host == 'email-verification') {
+      handleEmailVerification(initialUri);
+    }
+  }
+
+  @override
+  void dispose() {
+    _sub?.cancel();
+    super.dispose();
+    _authSubscriptions.cancel();
+  }
+
+  // Handle email verification via deep link
+  void handleEmailVerification(Uri uri) async {
+    final token = uri.queryParameters['token'];
+    if (token != null) {
+      try {
+        final response = await Supabase.instance.client.auth.verifyOTP(
+          token: token,
+          type: OtpType.email,
+        );
+        if (response.session != null) {
+          setState(() {
+            accountVerified = true; // Mark the account as verified
+          });
+
+          // Automatically navigate to BsicInfoScreen after verification
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BsicInfoScreen(
+                setCurrentUser: (User) {},
+              ),
+            ),
+          );
+        } else {
+          showErrorDialog('Email verification failed.');
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error during email verification: $e');
+        }
+        showErrorDialog('An error occurred during email verification.');
+      }
+    }
+  }
+
+  void showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,10 +165,11 @@ class _EmailandPasswordContent extends StatelessWidget {
                   const SizedBox(height: 8),
                   _buildConfirmPasswordField(context),
                   const SizedBox(height: 150),
-                  _buildNextButton(context),
+                  // Supabase Next Button with dynamic behavior based on verification
+                  _buildNextButtonForSupabaseSignUp(context),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -176,144 +268,6 @@ class _EmailandPasswordContent extends StatelessWidget {
     );
   }
 
-  Widget _buildNextButton(BuildContext context) {
-    final provider = Provider.of<EmailPasswordProvider>(context);
-    Future<void> createAccountAndNavigate() async {
-      try {
-        // Show loading indicator
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              content: Row(
-                children: [
-                  const CircularProgressIndicator(),
-                  Container(
-                    margin: const EdgeInsets.only(left: 7),
-                    child: const Text("Creating account..."),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-
-        // Create user account
-        UserCredential userCredential =
-            await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: provider.emailController.text.trim(),
-          password: provider.password,
-        );
-
-        if (kDebugMode) {
-          print("User creation successful: ${userCredential.user?.uid}");
-        }
-
-        // Add a small delay to ensure the dialog shows up
-        await Future.delayed(const Duration(milliseconds: 500));
-
-        // Close loading indicator
-        Navigator.of(context).pop();
-
-        if (userCredential.user != null) {
-          // Navigate to the next screen and pass the user object
-          Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) => BsicInfoScreen(user: userCredential.user!),
-          ));
-        }
-      } on FirebaseAuthException catch (e) {
-        // Close loading indicator
-        Navigator.of(context).pop();
-
-        if (kDebugMode) {
-          print("FirebaseAuthException: ${e.message}");
-        }
-
-        // Show error message when users try to create account.
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Account Creation Failed'),
-              content:
-                  Text(e.message ?? 'An error occurred. Please try again.'),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('OK'),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ],
-            );
-          },
-        );
-      } catch (e) {
-        // Close loading indicator
-        Navigator.of(context).pop();
-
-        if (kDebugMode) {
-          print("Unexpected error: $e");
-        }
-
-        // Show error message for unexpected errors
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Account Creation Failed'),
-              content:
-                  const Text('An unexpected error occurred. Please try again.'),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('OK'),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ],
-            );
-          },
-        );
-      }
-    }
-
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: ElevatedButton(
-        onPressed: provider.isFormValid()
-            ? createAccountAndNavigate
-            : () {
-                // Show a popup message to the user about what needs to be completed
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text('Incomplete Information'),
-                      content: const Text(
-                          'Please fill in all required information correctly.'),
-                      actions: <Widget>[
-                        TextButton(
-                          child: const Text('OK'),
-                          onPressed: () => Navigator.of(context).pop(),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-        style: ElevatedButton.styleFrom(
-          minimumSize: const Size.fromHeight(50),
-          backgroundColor: TextsInsideButtonColor,
-        ),
-        child: const Text(
-          'Next',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildValidationIndicator(
       {required bool isValid, required String text}) {
     return Row(
@@ -346,3 +300,143 @@ class _EmailandPasswordContent extends StatelessWidget {
     );
   }
 }
+
+Widget _buildNextButtonForSupabaseSignUp(BuildContext context) {
+  final provider = Provider.of<EmailPasswordProvider>(context);
+
+  return Align(
+    alignment: Alignment.bottomCenter,
+    child: ElevatedButton(
+      onPressed: () async {
+        // Refresh the session on button press to update the user's account state
+        await Supabase.instance.client.auth.refreshSession();
+        final session = Supabase.instance.client.auth.currentSession;
+
+        // Check if the email is verified, then navigate to the BasicInfoScreen
+        if (session != null && provider.isEmailVerified) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BsicInfoScreen(
+                setCurrentUser: (User) {},
+              ),
+            ),
+          );
+        } else if (provider.isFormValid()) {
+          await createAccountAndNavigate(context, provider);
+        } else {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Incomplete Information'),
+                content: const Text(
+                    'Please fill in all required information correctly.'),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text('OK'),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      },
+      style: ElevatedButton.styleFrom(
+        minimumSize: const Size.fromHeight(50),
+        backgroundColor: TextsInsideButtonColor,
+      ),
+      child: Text(
+        provider.isEmailVerified ? 'Next' : 'Create Account',
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    ),
+  );
+}
+
+Future<void> createAccountAndNavigate(
+    BuildContext context, EmailPasswordProvider provider) async {
+  try {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Row(
+            children: [
+              const CircularProgressIndicator(),
+              Container(
+                margin: const EdgeInsets.only(left: 7),
+                child: const Text("Creating account..."),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    final response = await Supabase.instance.client.auth.signUp(
+      email: provider.emailController.text.trim(),
+      password: provider.password,
+      emailRedirectTo: "fiander://email-verification",
+    );
+
+    Navigator.of(context).pop(); // Close the loading dialog
+
+    if (response.user != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Account created! Please check your email to verify your account.',
+          ),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 5),
+        ),
+      );
+
+      // Set up a listener for auth state changes
+      Supabase.instance.client.auth.onAuthStateChange.listen((data) async {
+        final AuthChangeEvent event = data.event;
+        if (event == AuthChangeEvent.userUpdated) {
+          // Refresh the session to reflect the updated state
+          await Supabase.instance.client.auth.refreshSession();
+
+          // Navigate to the BasicInfoScreen when the user updates (likely email verification)
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BsicInfoScreen(
+                setCurrentUser: (User) {},
+              ),
+            ),
+          );
+        }
+      });
+    }
+  } on AuthException catch (e) {
+    Navigator.of(context).pop(); // Close the loading dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Account Creation Failed'),
+          content: Text(e.message ?? 'Unknown error occurred'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+
+// Ensure your deep link handling logic is already set up as discussed previously.
+// The user will be redirected to the next screen when they verify their email.

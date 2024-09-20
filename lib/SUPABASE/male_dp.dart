@@ -1,12 +1,9 @@
 import 'package:fiander/COMPONENTS/avatar_screens_widget.dart';
-import 'package:fiander/SCREENS/REGISTRATION%20SCREENS/avatar_profile.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Still needed for the User object
+import 'package:fiander/SUPABASE/female_dp.dart';
 import 'package:flutter/material.dart';
 
-class MaleAvatarSelectionScreen extends StatelessWidget {
-  final User user;
-
-  const MaleAvatarSelectionScreen({super.key, required this.user});
+class MaleProfilePicture extends StatelessWidget {
+  const MaleProfilePicture({Key? key}) : super(key: key); // Removed required
 
   @override
   Widget build(BuildContext context) {
@@ -20,24 +17,20 @@ class MaleAvatarSelectionScreen extends StatelessWidget {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => FemaleAvatarSelectionScreen(
-                  user: user,
-                  setCurrentUser: (User? user) {},
-                ), // Use the user passed to the widget
+                builder: (context) => const FemaleProfilePicture(),
               ),
             );
           },
         ),
       ),
       body: AvatarSelectionScreen(
-        avatarImages:
-            // This list method generates the images saved in the emoji folder instead of typing it manually
-            generateAvatarImagePaths('lib/emojis', 14),
+        avatarImages: generateAvatarImagePaths(
+            'lib/emojis', 14), // Use the path for male avatars
       ),
     );
   }
 
-  // Generate the list of avatar image paths
+  // Generate the list of avatar image paths for male avatars
   List<String> generateAvatarImagePaths(String basePath, int count) {
     return List<String>.generate(
         count, (index) => '$basePath/male${index + 1}.png');

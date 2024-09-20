@@ -1,11 +1,16 @@
 import 'package:fiander/COMPONENTS/reuseable_widgets.dart';
 import 'package:fiander/CONSTANTS/constants.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/home_screen.dart';
+import 'package:fiander/SUPABASE/create_account.dart';
+import 'package:fiander/SUPABASE/otp_mobile.dart';
+import 'package:fiander/SUPABASE/user_informations.dart';
 import 'package:fiander/screens/REGISTRATION%20SCREENS/email_password_screen.dart';
 import 'package:fiander/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import '../../SUPABASE/female_dp.dart';
+import '../login_screen.dart';
 import 'basic_info.dart';
 import 'email_veri.dart';
 import 'forgot_password.dart';
@@ -16,42 +21,32 @@ class RegistrationScreens extends StatefulWidget {
   const RegistrationScreens({Key? key}) : super(key: key);
 
   @override
-  State<RegistrationScreens> createState() => _RegistrationScreensState();
+  _RegistrationScreensState createState() => _RegistrationScreensState();
 }
 
 class _RegistrationScreensState extends State<RegistrationScreens> {
-  // Controller to keep track of the pages
   final PageController _controller = PageController();
-  User? currentUser; // Nullable User variable to hold logged-in user
-
-  // Method to set the logged-in user
-  void setCurrentUser(User? user) {
-    setState(() {
-      currentUser = user;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
+          // PageView to swipe between screens
           PageView(
-              controller: _controller,
-              //physics: const NeverScrollableScrollPhysics(), // Disable sliding
+            controller: _controller,
+            children: [
+              CreateAccount(), // Step 1: Email and Password screen
+              const UserInformationScreen(),
+              const OtpVerificationScreen(), // Step 2: Basic Info screen
+              const FemaleProfilePicture(), // Step 3: Email Verification screen
+              // OnboardingStepFour(), // Step 4: Phone Verification screen
+              const OnboardingStepFive(),
+              // Step 5: Avatar selection screen
+            ],
+          ),
+          // Page indicator at the top or bottom
 
-              children: [
-                EmailandPassword(setCurrentUser: setCurrentUser),
-                if (currentUser != null) BsicInfoScreen(user: currentUser!),
-                if (currentUser != null)
-                  EmailVerificationScreen(user: currentUser!),
-                if (currentUser != null)
-                  PhoneVerificationScreen(
-                    user: currentUser!,
-                  ),
-                if (currentUser != null)
-                  FemaleAvatarSelectionScreen(user: currentUser!)
-              ]),
           Positioned(
             top: 50.0, // Adjust the top position as needed
             left: 0,
@@ -78,6 +73,18 @@ class _RegistrationScreensState extends State<RegistrationScreens> {
           ),
         ],
       ),
+    );
+  }
+}
+
+// Step 5: Avatar Selection
+class OnboardingStepFive extends StatelessWidget {
+  const OnboardingStepFive({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text('Select Your Avatar'),
     );
   }
 }

@@ -50,6 +50,17 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	  <key>CFBundleURLTypes</key>
+  <array>
+    <dict>
+      <key>CFBundleTypeRole</key>
+      <string>Editor</string>
+      <key>CFBundleURLSchemes</key>
+      <array>
+      <string>fiander</string> <!-- Replace with your scheme -->
+      </array>
+    </dict>
+  </array>
 		<!-- Microphone Usage Permission -->
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This application needs access to your microphone for calls</string>   	
