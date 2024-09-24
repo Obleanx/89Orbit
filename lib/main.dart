@@ -9,15 +9,13 @@ import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/home_screen.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/nav_bar.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/profile_screen.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/settings_screen.dart';
-import 'package:fiander/SCREENS/REGISTRATION%20SCREENS/basic_info.dart';
 import 'package:fiander/SCREENS/home_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:uni_links2/uni_links.dart';
-import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
+import 'SUPABASE/user_informations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,97 +38,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  StreamSubscription? _sub;
-
-  @override
-  void initState() {
-    super.initState();
-    // Handle initial deep link in case the app was started via a deep link
-    handleInitialDeepLink();
-
-// Initialize listener for deep links when the app is running
-    _sub = uriLinkStream.listen((Uri? uri) {
-      if (uri != null && uri.host == 'email-verification') {
-        // Handle email verification deep link
-        handleEmailVerification(uri);
-      }
-    });
-  }
-
-  Future<void> handleInitialDeepLink() async {
-    // Check if the app was launched via a deep link
-    final initialUri = await getInitialUri();
-    if (initialUri != null && initialUri.host == 'email-verification') {
-      // Handle email verification if the app was launched with a deep link
-      handleEmailVerification(initialUri);
-    }
-  }
-
-  @override
-  void dispose() {
-    _sub?.cancel();
-    super.dispose();
-  }
-
-  // Function to handle email verification
-  void handleEmailVerification(Uri uri) async {
-    final token =
-        uri.queryParameters['token']; // Extract token from query parameters
-    if (token != null) {
-      try {
-        // Verify OTP using Supabase
-        final response = await Supabase.instance.client.auth.verifyOTP(
-          token: token,
-          type: OtpType.email,
-        );
-
-        if (response.session != null) {
-          // Email verification successful, navigate to BsicInfoScreen
-          final user = response.user;
-
-          if (user != null) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => BsicInfoScreen(
-                  setCurrentUser: (User) {},
-                ),
-              ),
-            );
-          }
-        } else {
-          // Handle verification failure
-          showErrorDialog('Email verification failed.');
-        }
-      } catch (e) {
-        if (kDebugMode) {
-          print('Error during email verification: $e');
-        }
-        showErrorDialog('An error occurred during email verification.');
-      }
-    }
-  }
-
-  void showErrorDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Error'),
-          content: Text(message),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return MultiProvider(

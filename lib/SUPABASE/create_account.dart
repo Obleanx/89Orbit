@@ -1,13 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
 import 'dart:async';
 import 'package:fiander/PROVIDERS/create_account_provider.dart';
-import 'package:fiander/SCREENS/REGISTRATION%20SCREENS/basic_info.dart';
 import 'package:fiander/SUPABASE/user_informations.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uni_links2/uni_links.dart';
 import '../COMPONENTS/reuseable_widgets.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../CONSTANTS/constants.dart';
 
 class CreateAccount extends StatefulWidget {
@@ -30,7 +29,7 @@ class _CreateAccountState extends State<CreateAccount> {
         handleEmailVerification(uri);
       }
     });
-  }
+  } //
 
   Future<void> handleInitialDeepLink() async {
     final initialUri = await getInitialUri();
@@ -44,7 +43,7 @@ class _CreateAccountState extends State<CreateAccount> {
     _sub?.cancel();
     super.dispose();
     _authSubscriptions.cancel();
-  }
+  } //
 
   void handleEmailVerification(Uri uri) async {
     final token = uri.queryParameters['token'];
@@ -59,11 +58,11 @@ class _CreateAccountState extends State<CreateAccount> {
             accountVerified = true;
           });
 
-          // Automatically navigate to BsicInfoScreen after verification
+          // Automatically navigate to UserInformationScreen after verification
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => BsicInfoScreen(setCurrentUser: (User) {}),
+              builder: (context) => const UserInformationScreen(),
             ),
           );
         } else {
@@ -93,7 +92,7 @@ class _CreateAccountState extends State<CreateAccount> {
         );
       },
     );
-  }
+  } //
 
   @override
   Widget build(BuildContext context) {
@@ -157,6 +156,7 @@ class _CreateAccountContent extends StatelessWidget {
                   _buildPasswordValidationIndicators(context),
                   const SizedBox(height: 8),
                   _buildConfirmPasswordField(context),
+                  const SizedBox(height: 20),
                   const SizedBox(height: 150),
                   _buildNextButtonForSignUp(context),
                 ],
@@ -299,26 +299,45 @@ Widget _buildNextButtonForSignUp(BuildContext context) {
   return Align(
     alignment: Alignment.bottomCenter,
     child: ElevatedButton(
-      onPressed: () {
-        if (provider.isEmailVerified) {
-          // Navigate to BasicInfoScreen when email is verified
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const UserInformationScreen(),
-            ),
-          );
-        } else if (provider.isFormValid()) {
-          // Call account creation function or show a loading indicator
-          _showLoadingDialog(context);
+      onPressed: () async {
+        if (provider.isFormValid()) {
+          _showLoadingDialog(context); // Show loading dialog
 
-          // Simulate account creation process (replace this with real logic)
-          Future.delayed(const Duration(seconds: 2), () {
-            Navigator.of(context).pop(); // Close the loading dialog
-            _showSuccessMessage(context);
-          });
+          try {
+            final response = await Supabase.instance.client.auth.signUp(
+              email: provider.emailController.text.trim(),
+              password: provider.passwordController.text.trim(),
+            );
+
+            Navigator.of(context).pop(); // Close loading dialog
+
+            if (response.user != null) {
+              // Account successfully created, show success message
+              _showSuccessMessage(context);
+
+              // Wait for email verification deep link
+              // Optionally, navigate to another screen or wait for verification
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const UserInformationScreen(),
+                ),
+              );
+            } else {
+              // Account creation failed, show error message
+              _showErrorMessage(
+                  context, 'Failed to create account. Please try again.');
+            }
+          } on AuthException catch (e) {
+            Navigator.of(context).pop(); // Close loading dialog
+            _showErrorMessage(context, e.message); // Display auth error message
+          } catch (e) {
+            Navigator.of(context).pop(); // Close loading dialog
+            _showErrorMessage(
+                context, 'An unexpected error occurred. Please try again.');
+          }
         } else {
-          // Show dialog if form is invalid
+          // Form is invalid, show dialog asking the user to complete it
           _showIncompleteFormDialog(context);
         }
       },
@@ -326,9 +345,9 @@ Widget _buildNextButtonForSignUp(BuildContext context) {
         minimumSize: const Size.fromHeight(50),
         backgroundColor: TextsInsideButtonColor,
       ),
-      child: Text(
-        provider.isEmailVerified ? 'Next' : 'Create Account',
-        style: const TextStyle(
+      child: const Text(
+        'Create Account',
+        style: TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.bold,
         ),
@@ -357,6 +376,28 @@ void _showLoadingDialog(BuildContext context) {
   );
 }
 
+void _showSuccessMessage(BuildContext context) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text(
+        'Account created successfully! Please check your email to verify your account.',
+      ),
+      backgroundColor: Colors.green,
+      duration: Duration(seconds: 5),
+    ),
+  );
+}
+
+void _showErrorMessage(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.red,
+      duration: const Duration(seconds: 5),
+    ),
+  );
+}
+
 void _showIncompleteFormDialog(BuildContext context) {
   showDialog(
     context: context,
@@ -376,18 +417,5 @@ void _showIncompleteFormDialog(BuildContext context) {
   );
 }
 
-void _showSuccessMessage(BuildContext context) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(
-      content: Text(
-        'Account created! Please check your email to verify your account.',
-      ),
-      backgroundColor: Colors.green,
-      duration: Duration(seconds: 5),
-    ),
-  );
-}
-
-
-// Ensure your deep link handling logic is already set up as discussed previously.
+// Ensure your deep link handling logic is already set up
 // The user will be redirected to the next screen when they verify their email.

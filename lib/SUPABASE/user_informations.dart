@@ -2,10 +2,14 @@
 import 'package:fiander/COMPONENTS/phone_number.dart';
 import 'package:fiander/COMPONENTS/reuseable_widgets.dart';
 import 'package:fiander/PROVIDERS/user_info_provider.dart';
+import 'package:fiander/SUPABASE/otp_mobile.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'fetch_email.dart';
 
 class UserInformationScreen extends StatefulWidget {
   const UserInformationScreen({
@@ -21,7 +25,11 @@ class _UserInformationScreenState extends State<UserInformationScreen> {
   final _nameController = TextEditingController();
   final _residenceController = TextEditingController();
   final _phonenumberController = TextEditingController();
+  final TextEditingController _emailController =
+      TextEditingController(); // Add email controller
+
   String _selectedGender = 'Female';
+  bool _isLoading = false; // Add loading state
 
   String? _phoneNumber;
   @override
@@ -69,6 +77,10 @@ class _UserInformationScreenState extends State<UserInformationScreen> {
                   return Form(
                     child: Column(
                       children: [
+                        // Use custom email text form field here
+                        CustomEmailTextFormField(controller: _emailController),
+                        const SizedBox(height: 30),
+
                         CustomTextFormField(
                           controller: _nameController,
                           labelText: 'Name',
@@ -177,8 +189,7 @@ class _UserInformationScreenState extends State<UserInformationScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 35),
-                        const SizedBox(height: 90),
+                        const SizedBox(height: 80),
                         Align(
                           alignment: Alignment.bottomCenter,
                           child: Padding(
@@ -190,26 +201,22 @@ class _UserInformationScreenState extends State<UserInformationScreen> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xfffb40ad),
                                 ),
-                                onPressed: () {
-                                  try {
-                                    // _saveUserData();
-                                  } catch (e, stackTrace) {
-                                    if (kDebugMode) {
-                                      print('Network error');
-                                    }
-                                    if (kDebugMode) {
-                                      print('Stack trace: $stackTrace');
-                                    }
-                                    // Handle the error (show a dialog, etc.)
-                                  }
-                                },
-                                child: const Text(
-                                  'N e x t',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                                onPressed: _isLoading
+                                    ? null // Disable button when loading
+                                    : _saveUserData,
+                                child: _isLoading
+                                    ? const CircularProgressIndicator(
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.white),
+                                      )
+                                    : const Text(
+                                        'N e x t',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                               ),
                             ),
                           ),
@@ -223,6 +230,111 @@ class _UserInformationScreenState extends State<UserInformationScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _saveUserData() async {
+    // Validate form inputs
+    if (_nameController.text.isEmpty ||
+        _residenceController.text.isEmpty ||
+        _phoneNumber == null ||
+        _dobController.text.isEmpty ||
+        _emailController.text.isEmpty) {
+      _showErrorDialog('Please fill in all the required fields.');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true; // Show loading indicator
+    });
+
+    try {
+      // Check if the email already exists in the 'verified_user_details' table
+      final existingUserResponse = await Supabase.instance.client
+          .from('verified_user_details')
+          .select()
+          .eq('email', _emailController.text.trim());
+
+      if (existingUserResponse.isNotEmpty) {
+        // Email already exists
+        await _showSuccessDialog('Your details have been successfully saved!');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) => const OtpVerificationScreen(),
+          ),
+        );
+        return; // Skip the insertion since the email already exists
+      }
+
+      // Insert data into the 'verified_user_details' table if the email does not exist
+      final insertResponse =
+          await Supabase.instance.client.from('verified_user_details').insert({
+        'email': _emailController.text.trim(),
+        'name': _nameController.text.trim(),
+        'location': _residenceController.text.trim(),
+        'phone': _phoneNumber,
+        'dob': _dobController.text.trim(),
+        'gender': _selectedGender,
+      });
+
+      if (insertResponse.isEmpty) {
+        _showErrorDialog('Failed to save user details.');
+        return;
+      }
+
+      // Successfully added to Supabase, navigate to the next screen
+      await _showSuccessDialog('Your details have been successfully saved!');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (BuildContext context) => const OtpVerificationScreen(),
+        ),
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error occurred: $e');
+      }
+      _showErrorDialog('An unexpected error occurred: $e');
+    } finally {
+      setState(() {
+        _isLoading = false; // Hide loading indicator
+      });
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showSuccessDialog(String message) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // Prevent dismissing by tapping outside
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Success'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
