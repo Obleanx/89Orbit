@@ -1,7 +1,7 @@
 import 'package:fiander/SCREENS/REGISTRATION%20SCREENS/reg_screen.dart';
-import 'package:fiander/SCREENS/login_screen.dart';
 import 'package:flutter/material.dart';
 import '../CONSTANTS/constants.dart';
+import '../SUPABASE/login_screen.dart';
 
 class OnboardingPage2 extends StatelessWidget {
   @override

@@ -1,7 +1,9 @@
 import 'package:fiander/CONSTANTS/constants.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/join_event.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class JoinButton extends StatelessWidget {
   @override
@@ -32,8 +34,7 @@ class JoinButton extends StatelessWidget {
   void _showEventSelectionDialog(BuildContext context) {
     showDialog(
       context: context,
-      barrierColor: Colors.grey
-          .withOpacity(0.6), // Blur effect for the second pop message
+      barrierColor: Colors.grey.withOpacity(0.6),
       builder: (BuildContext context) {
         return EventSelectionDialog();
       },
@@ -48,6 +49,7 @@ class EventSelectionDialog extends StatefulWidget {
 
 class _EventSelectionDialogState extends State<EventSelectionDialog> {
   String? selectedEvent;
+  final supabase = Supabase.instance.client;
 
   @override
   Widget build(BuildContext context) {
@@ -121,8 +123,7 @@ class _EventSelectionDialogState extends State<EventSelectionDialog> {
   void _showTimeSelectionDialog(BuildContext context, String eventType) {
     showDialog(
       context: context,
-      barrierColor: Colors.blueGrey
-          .withOpacity(0.6), //blur effect for the second pop message.
+      barrierColor: Colors.blueGrey.withOpacity(0.6),
       builder: (BuildContext context) {
         return TimeSelectionDialog(eventType: eventType);
       },
@@ -141,6 +142,7 @@ class TimeSelectionDialog extends StatefulWidget {
 
 class _TimeSelectionDialogState extends State<TimeSelectionDialog> {
   String? selectedTime;
+  final supabase = Supabase.instance.client;
 
   @override
   Widget build(BuildContext context) {
@@ -161,11 +163,72 @@ class _TimeSelectionDialogState extends State<TimeSelectionDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: () {
+          onPressed: () async {
             if (selectedTime != null) {
-              Navigator.of(context).pop();
-              _navigateToJoinEventScreen(
-                  context, widget.eventType, selectedTime!);
+              try {
+                String eventDate = getNextWeekendDate(widget.eventType);
+
+                // Fetch gender from verified_user_details table
+                final verifiedUserDetails = await supabase
+                    .from('verified_user_details')
+                    .select('gender')
+                    .single();
+
+                String gender = verifiedUserDetails['gender'] ?? '';
+                // Insert all required fields in a single operation
+                await supabase.from('speed_dating_events').insert({
+                  'user_id': supabase.auth.currentUser!.id,
+                  'event_type': widget.eventType,
+                  'event_time': selectedTime,
+                  'event_date': eventDate,
+                  'gender': gender,
+                }).select();
+
+                // Log the response to the terminal..
+
+                Navigator.of(context).pop();
+                _navigateToJoinEventScreen(
+                    context, widget.eventType, selectedTime!, eventDate);
+              } catch (e) {
+                if (kDebugMode) {
+                  print('Error adding event details: $e');
+                }
+                String errorMessage =
+                    'Failed to add event details. Please try again.';
+
+                if (e is PostgrestException) {
+                  if (kDebugMode) {
+                    print('PostgrestException code: ${e.code}');
+                  }
+                  if (kDebugMode) {
+                    print('PostgrestException details: ${e.details}');
+                  }
+                  if (e.code == '23514') {
+                    errorMessage =
+                        'Invalid event type. Please contact support.';
+                  }
+                }
+
+                // Show an error dialog to the user
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Error'),
+                      content: const Text(
+                          'Failed to add event details. Please try again.'),
+                      actions: [
+                        TextButton(
+                          child: const Text('OK'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              }
             }
           },
           child: const Text('Confirm'),
@@ -211,15 +274,14 @@ class _TimeSelectionDialogState extends State<TimeSelectionDialog> {
     );
   }
 
-  void _navigateToJoinEventScreen(
-      BuildContext context, String eventType, String selectedTime) {
+  void _navigateToJoinEventScreen(BuildContext context, String eventType,
+      String selectedTime, String eventDate) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => JoinEventScreen(
           eventType: eventType,
-          selectedDate:
-              getNextWeekendDate(eventType), // Use the correct date format
+          selectedDate: eventDate,
           selectedTime: selectedTime,
         ),
       ),

@@ -1,4 +1,4 @@
-import 'package:fiander/SCREENS/login_screen.dart';
+import 'package:fiander/SUPABASE/login_screen.dart';
 import 'package:flutter/material.dart';
 import '../CONSTANTS/constants.dart';
 import 'REGISTRATION SCREENS/reg_screen.dart';

@@ -1,14 +1,12 @@
 // ignore_for_file: depend_on_referenced_packages, library_private_types_in_public_api, use_build_context_synchronously
-
+import 'package:fiander/COMPONENTS/reuseable_widgets.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/home_screen.dart';
-import 'package:fiander/SCREENS/REGISTRATION%20SCREENS/forgot_password.dart';
-import 'package:fiander/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../COMPONENTS/phone_number.dart';
 import '../CONSTANTS/constants.dart';
 import '../PROVIDERS/login_screen_provider.dart';
-import 'onboarding_state.dart';
+import '../SCREENS/onboarding_state.dart';
+import 'reset_password.dart';
 
 class LoginWithPhonenumber extends StatefulWidget {
   const LoginWithPhonenumber({super.key});
@@ -19,8 +17,8 @@ class LoginWithPhonenumber extends StatefulWidget {
 
 class _LoginWithPhonenumberState extends State<LoginWithPhonenumber> {
   bool _isPasswordVisible = false;
-  final _phoneNumberController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -57,12 +55,13 @@ class _LoginWithPhonenumberState extends State<LoginWithPhonenumber> {
                   style: TextStyle(fontSize: 12, color: Colors.black),
                 ),
                 const SizedBox(height: 45),
-                PhoneNumberInput(
-                  controller: _phoneNumberController,
-                  initialValue: '+234',
-                  onChanged: (phoneNumber) {
-                    // Handle phone number change if needed
-                  },
+                CustomTextFormField(
+                  controller: _emailController,
+                  labelText: 'Email address',
+                  hintText: 'Enter your email',
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) =>
+                      value?.isEmpty ?? true ? 'Please enter your email' : null,
                 ),
                 const SizedBox(height: 20),
                 const Text(
@@ -78,7 +77,7 @@ class _LoginWithPhonenumberState extends State<LoginWithPhonenumber> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const ForgotPasswordScreen(),
+                          builder: (context) => const ResetPasswordScreen(),
                         ),
                       );
                     },

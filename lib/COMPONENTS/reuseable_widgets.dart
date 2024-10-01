@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-// Reusable widgets for the basic info screens.
 // You can change the text fields and their designs and functions if there is a problem.
 class CustomTextFormField extends StatelessWidget {
   final String labelText;

@@ -2,7 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 class CallPage extends StatelessWidget {
-  const CallPage({Key? key, required this.callID}) : super(key: key);
+  const CallPage(
+      {Key? key,
+      required this.callID,
+      required String eventType,
+      required String eventDate,
+      required int callDurationInMinutes})
+      : super(key: key);
   final String callID;
 
   @override

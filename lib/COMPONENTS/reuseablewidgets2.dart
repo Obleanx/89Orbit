@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../CONSTANTS/constants.dart';
-import '../SCREENS/login_screen.dart';
+import '../SUPABASE/login_screen.dart';
 
 class PasswordCreationScreen extends StatefulWidget {
   final String title;
@@ -28,11 +28,12 @@ class PasswordCreationScreen extends StatefulWidget {
 class _PasswordCreationScreenState extends State<PasswordCreationScreen> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
   String _password = '';
   String _confirmPassword = '';
-
   bool _passwordsMatch() {
     return _password == _confirmPassword;
   }
@@ -85,6 +86,31 @@ class _PasswordCreationScreenState extends State<PasswordCreationScreen> {
                 ),
               ),
               const SizedBox(height: 16),
+              TextFormField(
+                key: _formKey,
+                controller: _emailController,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  hintText: 'Enter your email address',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(7.0),
+                    borderSide: const BorderSide(
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your email';
+                  }
+                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                      .hasMatch(value)) {
+                    return 'Please enter a valid email';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
               const Text(
                 'Enter your password',
                 style: TextStyle(
@@ -235,8 +261,8 @@ class _PasswordCreationScreenState extends State<PasswordCreationScreen> {
     return Row(
       children: [
         Container(
-          width: 20,
-          height: 20,
+          width: 12,
+          height: 12,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: isValid ? Colors.green : Colors.red,
@@ -245,7 +271,7 @@ class _PasswordCreationScreenState extends State<PasswordCreationScreen> {
             child: Icon(
               isValid ? Icons.check : Icons.close,
               color: Colors.white,
-              size: 20,
+              size: 7,
             ),
           ),
         ),
@@ -254,7 +280,7 @@ class _PasswordCreationScreenState extends State<PasswordCreationScreen> {
           text,
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 10,
             color: isValid ? Colors.green : Colors.red,
           ),
         ),

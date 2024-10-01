@@ -54,17 +54,6 @@ class _AtmCardScreenState extends State<AtmCardScreen> {
     );
   }
 
-  // void _checkpayment() {
-  // try {
-  // PayStackManager(context: context)
-
-  // } catch (error) {
-  // if (kDebugMode) {
-  // print("payment error ==$error");
-  // }
-  // }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(

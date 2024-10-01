@@ -2,11 +2,11 @@ import 'package:fiander/COMPONENTS/event_text.dart';
 import 'package:fiander/COMPONENTS/join_button.dart';
 import 'package:fiander/COMPONENTS/upcoming_events.dart';
 import 'package:fiander/CONSTANTS/constants.dart';
-import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/join_event.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
+import '../../COMPONENTS/FETCHING_USERS_DETAILS/profile_picture.dart';
 import 'nav_bar.dart';
 import 'settings_screen.dart';
 
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => HomeScreen1(),
         '/events': (context) => const EventsScreen(),
         '/settings': (context) => const SettingsScreen(),
-        '/profile': (context) => const ProfileScreen(),
+        '/profile': (context) => ProfileScreen(),
       },
       title: 'Sliver Todo App',
       theme: ThemeData(
@@ -67,11 +67,10 @@ class HomeScreen1 extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                UserWelcome(),
+                const Avatar$username(),
                 const SizedBox(height: 10),
                 CarouselSection(),
                 EventDateText(),
-                //const SaturdayEventDateText(eventTime: '2:00 - 3:00pm'),
                 AvailableEventsTitle(),
                 EventGrid(),
                 EventGrid(),
@@ -80,48 +79,12 @@ class HomeScreen1 extends StatelessWidget {
                   saturdayTime: '2:00-3:00pm',
                   sundayTime: '4:00-5:00pm',
                 ),
-                // const SaturdayEventCard(time: '2:00-3:00pm'),
-                // const SizedBox(height: 18),
-                // const SundayEventCard(time: '4:00-5:00pm'),
               ],
             ),
           ),
         ],
       ),
       bottomNavigationBar: const CustomBottomNavigationBar(),
-    );
-  }
-}
-
-class UserWelcome extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 13),
-      child: Row(
-        children: [
-          const CircleAvatar(
-            radius: 30,
-            // backgroundImage: NetworkImage('https://example.com/user_image.jpg'),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment
-                  .start, // Aligns text to the start of the Column
-
-              children: [
-                const Text(
-                  'Hi! Welcome back..John Doe',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 5),
-                EventRegistrationStatus(),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

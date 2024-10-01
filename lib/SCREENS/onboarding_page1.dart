@@ -1,6 +1,7 @@
-import 'package:fiander/SCREENS/login_screen.dart';
+import 'package:fiander/DAting%20events%20screens/finding_date.dart';
 import 'package:flutter/material.dart';
 import '../CONSTANTS/constants.dart';
+import '../SUPABASE/login_screen.dart';
 import 'REGISTRATION SCREENS/reg_screen.dart';
 
 class OnboardingPage1 extends StatelessWidget {
@@ -53,7 +54,7 @@ class OnboardingPage1 extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  const LoginWithPhonenumber()),
+                                  FindingDateLoadingScreen()), //  LoginWithPhonenumber
                         );
                       },
                       style: ElevatedButton.styleFrom(

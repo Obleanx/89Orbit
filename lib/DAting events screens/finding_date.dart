@@ -105,6 +105,9 @@ class FindingDateLoadingScreen extends StatelessWidget {
                         MaterialPageRoute(
                           builder: (context) => CallPage(
                             callID: '',
+                            eventType: '',
+                            eventDate: '',
+                            callDurationInMinutes: 3,
                           ),
                         ),
                       );

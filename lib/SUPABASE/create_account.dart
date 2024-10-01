@@ -417,5 +417,5 @@ void _showIncompleteFormDialog(BuildContext context) {
   );
 }
 
-// Ensure your deep link handling logic is already set up
+// Ensure the deep link handling logic is already set up
 // The user will be redirected to the next screen when they verify their email.

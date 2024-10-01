@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart'; // Import Supabase package
 import 'package:supabase/supabase.dart';
-import 'female_dp.dart'; // Import for Postgrest integration
+import 'female_dp.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
   const OtpVerificationScreen({Key? key}) : super(key: key);

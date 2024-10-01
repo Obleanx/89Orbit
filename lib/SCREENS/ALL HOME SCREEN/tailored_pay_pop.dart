@@ -1,4 +1,5 @@
 import 'package:fiander/CONSTANTS/constants.dart';
+import 'package:fiander/PAYMENT%20SCREENS/card_inputs.dart';
 import 'package:flutter/material.dart';
 
 import 'userdetails.dart';
@@ -101,7 +102,7 @@ class TailoredEventAccessScreen extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
-                                    const UserPreferencesScreen()),
+                                    const UserPreferencesScreen()), // AtmCardScreen
                           );
                         },
                         child: const Text(

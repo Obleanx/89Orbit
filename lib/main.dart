@@ -5,6 +5,7 @@ import 'package:fiander/PROVIDERS/home_screen_provider.dart';
 import 'package:fiander/PROVIDERS/login_screen_provider.dart';
 import 'package:fiander/PROVIDERS/pay_popup_provider.dart';
 import 'package:fiander/PROVIDERS/settings_screen_provider.dart';
+import 'package:fiander/PROVIDERS/user_preference_provider.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/home_screen.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/nav_bar.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/profile_screen.dart';
@@ -15,7 +16,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'SUPABASE/user_informations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,6 +53,9 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
         ChangeNotifierProvider(create: (_) => EventAccessNotifier()),
         ChangeNotifierProvider(create: (_) => CardProvider()),
+        ChangeNotifierProvider(
+          create: (_) => UserPreferencesProvider(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

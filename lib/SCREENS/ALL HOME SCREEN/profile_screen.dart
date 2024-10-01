@@ -3,13 +3,100 @@ import 'package:fiander/CONSTANTS/constants.dart';
 import 'package:fiander/PROVIDERS/settings_screen_provider.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/event_history.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/home_screen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-// ignore: depend_on_referenced_packages
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'nav_bar.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  String? location;
+  String? avatarAsset;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+//fetches the user informations from the data base
+  Future<void> _fetchUserData() async {
+    try {
+      final user = Supabase.instance.client.auth.currentUser;
+
+      if (user != null && user.email != null) {
+        if (kDebugMode) {
+          print('Fetching data for user email: ${user.email}');
+        }
+
+        final response = await Supabase.instance.client
+            .from('verified_user_details')
+            .select('location, avatar')
+            .eq('email', user.email as Object)
+            .single();
+
+        if (kDebugMode) {
+          print('Supabase response: $response');
+        }
+
+        setState(() {
+          location = response['location'] as String?;
+          avatarAsset = response['avatar'] as String?;
+          isLoading = false;
+        });
+
+        if (kDebugMode) {
+          print('Location: $location, Avatar: $avatarAsset');
+        }
+      } else {
+        throw Exception('User not logged in or email not available');
+      }
+    } on PostgrestException catch (e) {
+      if (kDebugMode) {
+        print('PostgrestException: ${e.message}');
+      }
+      if (kDebugMode) {
+        print('Details: ${e.details}');
+      }
+      if (kDebugMode) {
+        print('Hint: ${e.hint}');
+      }
+      _showErrorDialog('Database error: ${e.message}');
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching user data: $e');
+      }
+      _showErrorDialog('Failed to fetch user data: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,13 +140,16 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const Positioned.fill(
+                  Positioned.fill(
                     child: Align(
                       alignment: Alignment.center,
                       child: CircleAvatar(
                         radius: 70,
-                        backgroundImage: AssetImage(
-                            'lib/emojis/emoji3.png'), // Update with your asset
+
+                        backgroundImage: avatarAsset != null
+                            ? AssetImage(avatarAsset!)
+                            : const AssetImage(
+                                'lib/images/default_avatar.png'), // Update with your asset
                       ),
                     ),
                   ),
@@ -69,8 +159,10 @@ class ProfileScreen extends StatelessWidget {
                     child: Consumer<SettingsProvider>(
                       builder: (context, provider, child) {
                         return Text(
-                          provider.userLocation ?? 'Location not available',
-                          style: const TextStyle(color: Colors.black),
+                          location != null
+                              ? ' $location'
+                              : 'location not available...',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         );
                       },
                     ),
@@ -99,12 +191,12 @@ class ProfileScreen extends StatelessWidget {
                         // Handle Blog tap
                       },
                     ),
-                    SettingsListItem(
-                      title: 'settings',
-                      onTap: () {
-                        // Handle Blog tap
-                      },
-                    ),
+                    // SettingsListItem(
+                    // title: 'settings',
+                    // onTap: () {
+                    // Handle Blog tap
+                    // },
+                    // ),
                   ],
                 ),
               ),
