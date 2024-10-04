@@ -16,22 +16,38 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
+
+/// 1.1.1 Define a navigator key
+final navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Supabase.initialize(
     url: 'https://shcwsfoylsjakwlezini.supabase.co',
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNoY3dzZm95bHNqYWt3bGV6aW5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjY1ODI1NzksImV4cCI6MjA0MjE1ODU3OX0.FlDFdkVRTaAna_MycZ0b4p5Y2HieXEwXzkmu0vTJD-E',
   );
-  runApp(const MyApp());
+
+  /// 1.1.2 Set navigator key to ZegoUIKitPrebuiltCallInvitationService
+  ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
+
+  /// Initialize Zego and configure calling UI
+  ZegoUIKit().initLog().then((value) {
+    ZegoUIKitPrebuiltCallInvitationService().useSystemCallingUI(
+      [ZegoUIKitSignalingPlugin()],
+    );
+
+    runApp(MyApp(navigatorKey: navigatorKey));
+  });
 }
 
-// It's handy to then extract the Supabase client in a variable for later uses
-final supabase = Supabase.instance.client;
-
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final GlobalKey<NavigatorState> navigatorKey;
+
+  const MyApp({Key? key, required this.navigatorKey}) : super(key: key);
 
   @override
   _MyAppState createState() => _MyAppState();
@@ -42,10 +58,9 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        // Your providers here
+        // providers here
         ChangeNotifierProvider(create: (_) => AppStateProvider()),
-        ChangeNotifierProvider<AvatarSelectionProvider>(
-            create: (_) => AvatarSelectionProvider()),
+        ChangeNotifierProvider(create: (_) => AvatarSelectionProvider()),
         ChangeNotifierProvider(create: (_) => AppState()),
         ChangeNotifierProvider(create: (_) => HomeScreenProvider()),
         ChangeNotifierProvider(
@@ -53,18 +68,21 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
         ChangeNotifierProvider(create: (_) => EventAccessNotifier()),
         ChangeNotifierProvider(create: (_) => CardProvider()),
-        ChangeNotifierProvider(
-          create: (_) => UserPreferencesProvider(),
-        ),
+        ChangeNotifierProvider(create: (_) => UserPreferencesProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+
+        /// 1.1.3 Register the navigator key to MaterialApp
+        navigatorKey: widget.navigatorKey,
+
         theme: ThemeData(
           primarySwatch: Colors.blue,
           textTheme: GoogleFonts.montserratTextTheme(
             Theme.of(context).textTheme,
           ),
         ),
+
         home: HomeScreenLoader(),
         routes: {
           '/home': (context) => HomeScreen1(),

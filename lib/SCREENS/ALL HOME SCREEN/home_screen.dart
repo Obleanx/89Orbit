@@ -2,10 +2,11 @@ import 'package:fiander/COMPONENTS/event_text.dart';
 import 'package:fiander/COMPONENTS/join_button.dart';
 import 'package:fiander/COMPONENTS/upcoming_events.dart';
 import 'package:fiander/CONSTANTS/constants.dart';
+import 'package:fiander/DATE_MATHCHING/pairing_logic.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/profile_screen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-
 import '../../COMPONENTS/FETCHING_USERS_DETAILS/profile_picture.dart';
 import 'nav_bar.dart';
 import 'settings_screen.dart';
@@ -154,19 +155,17 @@ class CarouselSection extends StatelessWidget {
                       Positioned(
                         bottom: 8,
                         right: 8,
-                        child: TextButton(
-                          onPressed: () {
-                            // Handle button press
-                          },
+                        child: // Update the button's onPressed callback
+                            TextButton(
+                          onPressed: () => pairUsers(context),
                           style: TextButton.styleFrom(
                             foregroundColor: TextsInsideButtonColor,
-                            backgroundColor:
-                                Colors.white, // Ensure transparent background
+                            backgroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 8),
                           ),
                           child: const Text(
-                            'Join',
+                            'Pair Users',
                             style: TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold),

@@ -394,10 +394,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_logs
-      sha256: f1260ca25bbc853ac1c33c94ef80493d595ed67a51a3d61a3be7a9d097901a42
+      sha256: "46880b3da87bf66d10c69505fd8dec1ef78fe1793fc909169ddb9aa9fe34f164"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.0"
+    version: "2.2.1"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -1289,10 +1289,10 @@ packages:
     dependency: transitive
     description:
       name: zego_plugin_adapter
-      sha256: e70dc16ce34135cb37b154d688c45eda60af58c350333e49c4b71b0cbe221642
+      sha256: "74566966c9fe383008b25427c00bd0ccb8ec69699e1bcca48324034e182790e9"
       url: "https://pub.dev"
     source: hosted
-    version: "2.13.1"
+    version: "2.13.2"
   zego_uikit:
     dependency: transitive
     description:
@@ -1310,13 +1310,13 @@ packages:
     source: hosted
     version: "4.15.8"
   zego_uikit_signaling_plugin:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: zego_uikit_signaling_plugin
-      sha256: c7d51197f48c1a006e90ec7eecec1871478a7dfbe2c7aa3678a70a9161f76d94
+      sha256: "2c79ecf86189f56778cea7fe195df4579eca02e677b81eb35a0b8276d06e9ddc"
       url: "https://pub.dev"
     source: hosted
-    version: "2.8.3"
+    version: "2.8.4"
   zego_zim:
     dependency: transitive
     description:

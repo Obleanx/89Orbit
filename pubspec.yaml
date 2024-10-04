@@ -52,6 +52,7 @@ dependencies:
   flutter_callkit_incoming_yoer: ^2.0.4+1
   supabase_flutter: ^2.6.0
   uni_links2: ^0.6.0+2
+  zego_uikit_signaling_plugin: ^2.8.4
   
 
 
