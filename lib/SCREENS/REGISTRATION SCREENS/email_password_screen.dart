@@ -66,9 +66,7 @@ class _EmailandPasswordState extends State<EmailandPassword> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => BsicInfoScreen(
-                setCurrentUser: (User) {},
-              ),
+              builder: (context) => BsicInfoScreen(),
             ),
           );
         } else {
@@ -317,9 +315,7 @@ Widget _buildNextButtonForSupabaseSignUp(BuildContext context) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => BsicInfoScreen(
-                setCurrentUser: (User) {},
-              ),
+              builder: (context) => BsicInfoScreen(),
             ),
           );
         } else if (provider.isFormValid()) {
@@ -409,9 +405,7 @@ Future<void> createAccountAndNavigate(
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => BsicInfoScreen(
-                setCurrentUser: (User) {},
-              ),
+              builder: (context) => BsicInfoScreen(),
             ),
           );
         }

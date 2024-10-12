@@ -16,6 +16,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -35,6 +37,8 @@ class MyApp extends StatelessWidget {
 }
 
 class HomeScreen1 extends StatelessWidget {
+  const HomeScreen1({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,6 +95,8 @@ class HomeScreen1 extends StatelessWidget {
 }
 
 class EventRegistrationStatus extends StatelessWidget {
+  const EventRegistrationStatus({super.key});
+
   @override
   Widget build(BuildContext context) {
     return const Text("You haven't registered for an event");
@@ -103,6 +109,8 @@ class CarouselSection extends StatelessWidget {
     'lib/images/home2.jpeg',
     'lib/images/home3.jpeg',
   ];
+
+  CarouselSection({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -185,6 +193,8 @@ class CarouselSection extends StatelessWidget {
 }
 
 class EventDateText extends StatelessWidget {
+  const EventDateText({super.key});
+
   @override
   Widget build(BuildContext context) {
     return const Padding(
@@ -201,6 +211,8 @@ class EventDateText extends StatelessWidget {
 }
 
 class AvailableEventsTitle extends StatelessWidget {
+  const AvailableEventsTitle({super.key});
+
   @override
   Widget build(BuildContext context) {
     return const Padding(
@@ -214,6 +226,8 @@ class AvailableEventsTitle extends StatelessWidget {
 }
 
 class EventGrid extends StatelessWidget {
+  const EventGrid({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -236,7 +250,6 @@ class EventGrid extends StatelessWidget {
                     ),
                   ),
                 ]),
-                //  EventDateText(),
                 const SaturdayEventDateText(eventTime: '2:00 - 3:00pm'),
                 JoinButton(),
               ],
@@ -257,7 +270,6 @@ class EventGrid extends StatelessWidget {
                     ),
                   ),
                 ),
-                //  EventDateText(),
                 const SundayEventDateText(eventTime: '4:00 - 5:00pm'),
                 JoinButton(),
               ],
@@ -270,6 +282,8 @@ class EventGrid extends StatelessWidget {
 }
 
 class UpcomingEventsTitle extends StatelessWidget {
+  const UpcomingEventsTitle({super.key});
+
   @override
   Widget build(BuildContext context) {
     return const Padding(

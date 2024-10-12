@@ -1,16 +1,11 @@
 import 'package:fiander/COMPONENTS/avatar_screens_widget.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../onboarding_state.dart'; // Import your screen file
 
 class FemaleAvatarSelectionScreen extends StatelessWidget {
-  final User user;
-
   const FemaleAvatarSelectionScreen(
-      {Key? key,
-      required this.user,
-      required void Function(User? user) setCurrentUser})
+      {Key? key, required void Function() setCurrentUser})
       : super(key: key);
 
   @override

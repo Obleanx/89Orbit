@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+import 'dart:io';
 import 'package:fiander/PROVIDERS/app_state_provider.dart';
 import 'package:fiander/PROVIDERS/atm_idetails.dart';
 import 'package:fiander/PROVIDERS/avatar_screen_providers.dart';
@@ -11,19 +13,45 @@ import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/nav_bar.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/profile_screen.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/settings_screen.dart';
 import 'package:fiander/SCREENS/home_screen.dart';
+import 'package:fiander/options.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
+import 'package:flutter_windowmanager/flutter_windowmanager.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 /// 1.1.1 Define a navigator key
 final navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    if (kDebugMode) {
+      print('Firebase initialization error: $e');
+    }
+  }
+
+  // Initialize OneSignal
+  OneSignal.initialize("57668fe6-896d-42e0-9b3e-42dab3fb92d2");
+
+  // Optional: Logging for debugging
+  OneSignal.Debug.setLogLevel(OSLogLevel.debug);
+
+  // OneSignal Notification Will be Shown
+  OneSignal.Notifications.requestPermission(true);
+
+  _applySecurityFlags();
 
   await Supabase.initialize(
     url: 'https://shcwsfoylsjakwlezini.supabase.co',
@@ -44,6 +72,19 @@ Future<void> main() async {
   });
 }
 
+Future<void> _applySecurityFlags() async {
+  if (!kIsWeb) {
+    if (Platform.isAndroid) {
+      await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
+    } else if (Platform.isIOS) {
+      // iOS doesn't have a direct equivalent, but you can use this to prevent
+      // the app content from appearing in the app switcher preview.
+      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+          overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
+    }
+  }
+}
+
 class MyApp extends StatefulWidget {
   final GlobalKey<NavigatorState> navigatorKey;
 
@@ -54,7 +95,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
@@ -85,7 +125,7 @@ class _MyAppState extends State<MyApp> {
 
         home: HomeScreenLoader(),
         routes: {
-          '/home': (context) => HomeScreen1(),
+          '/home': (context) => const HomeScreen1(),
           '/events': (context) => const EventsScreen(),
           '/settings': (context) => const SettingsScreen(),
           '/profile': (context) => const ProfileScreen(),
@@ -95,10 +135,7 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-
-         //physics: const NeverScrollableScrollPhysics(), // Disable sliding
-              //physics: const NeverScrollableScrollPhysics(), // Disable sliding
-              //physics: const NeverScrollableScrollPhysics(), // Disable sliding
+//physics: const NeverScrollableScrollPhysics(), // Disable sliding
+//physics: const NeverScrollableScrollPhysics(), // Disable sliding
+//physics: const NeverScrollableScrollPhysics(), // Disable sliding
 //add it in the page view of smooth page indicator
-
-

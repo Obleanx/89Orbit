@@ -10,7 +10,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Fiander</string>
+	<string>FianDer</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -66,6 +66,9 @@
 	<string>This application needs access to your microphone for calls</string>   	
     <key>NSCameraUsageDescription</key>
     <string>Camera is required to make video calls</string>
+        <!-- no screen recording or screenshots allowed-->
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>This app prevents screenshots for security reasons.</string>
 
 	<!-- VoIP Background Mode -->
 	<key>UIBackgroundModes</key>

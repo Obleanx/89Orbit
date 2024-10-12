@@ -1,7 +1,6 @@
 import 'package:fiander/CONSTANTS/constants.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/home_screen.dart';
 import 'package:fiander/SUPABASE/male_dp.dart';
-import 'package:fiander/main.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

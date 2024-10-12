@@ -30,6 +30,7 @@ class _RegistrationScreensState extends State<RegistrationScreens> {
               const UserInformationScreen(), // Step 2: Basic Info screen
               const OtpVerificationScreen(), // Step 3: Phone Verification screen
               const FemaleProfilePicture(), // Step 4: Avatar selection screen
+              //the the user logins in to the home screen. Shekina!!
             ],
           ),
           // Page indicator at the top

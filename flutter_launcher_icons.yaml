@@ -1,0 +1,32 @@
+# flutter pub run flutter_launcher_icons
+flutter_launcher_icons:
+  image_path:  "lib/emojis/male5.png"
+
+  android: true
+  image_path_android:  "lib/emojis/male5.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  adaptive_icon_background: "lib/images/fianderlogo.png"  
+  adaptive_icon_foreground: "lib/images/fianderlogo.png"  
+  # adaptive_icon_monochrome: "assets/icon/monochrome.png"
+
+  ios: true
+  image_path_ios:  "lib/images/fianderlogo.png"
+  remove_alpha_channel_ios: true
+  adaptive_icon_background: "lib/images/fianderlogo.png"  
+  adaptive_icon_foreground: "lib/images/fianderlogo.png" 
+  #desaturate_tinted_to_grayscale_ios: true
+
+  web:
+    generate: true
+    image_path: "lib/images/fianderlogo.png"
+    #background_color: "#hexcode"
+    theme_color: "#hexcode"
+
+  windows:
+    generate: true
+    image_path: "lib/images/fianderlogo.png"
+    icon_size: 48 # min:48, max:256, default: 48
+
+  macos:
+    generate: true
+    image_path: "lib/images/fianderlogo.png"

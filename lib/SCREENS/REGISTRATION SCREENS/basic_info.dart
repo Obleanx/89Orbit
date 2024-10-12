@@ -1,20 +1,18 @@
 // ignore_for_file: use_build_context_synchronously
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fiander/COMPONENTS/phone_number.dart';
 import 'package:fiander/COMPONENTS/reuseable_widgets.dart';
 import 'package:fiander/SCREENS/REGISTRATION%20SCREENS/email_veri.dart';
 import 'package:fiander/SCREENS/onboarding_state.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class BsicInfoScreen extends StatefulWidget {
   //final User? user; // Nullable User object
-  final Function(User?) setCurrentUser; // Function to set the current user
 
-  BsicInfoScreen({Key? key, required this.setCurrentUser})
-      : super(key: key); // Accept the user and setCurrentUser
+  BsicInfoScreen({
+    Key? key,
+  }) : super(key: key); // Accept the user and setCurrentUser
 
   @override
   _BsicInfoScreenState createState() => _BsicInfoScreenState();

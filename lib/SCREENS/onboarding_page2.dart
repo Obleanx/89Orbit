@@ -1,4 +1,5 @@
-import 'package:fiander/SCREENS/REGISTRATION%20SCREENS/reg_screen.dart';
+import 'package:fiander/SCREENS/REGISTRATION%20SCREENS/reg.dart';
+import 'package:fiander/SUPABASE/user_informations.dart';
 import 'package:flutter/material.dart';
 import '../CONSTANTS/constants.dart';
 import '../SUPABASE/login_screen.dart';
