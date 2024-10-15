@@ -13,7 +13,7 @@ import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/nav_bar.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/profile_screen.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/settings_screen.dart';
 import 'package:fiander/SCREENS/home_screen.dart';
-import 'package:fiander/options.dart';
+import 'package:fiander/firebase_API.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,53 +23,54 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 import 'package:flutter_windowmanager/flutter_windowmanager.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 /// 1.1.1 Define a navigator key
 final navigatorKey = GlobalKey<NavigatorState>();
-
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+void main() async {
+  runApp(const LoadingApp());
 
   try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
+    if (kDebugMode) print("Step 1: Initializing WidgetsFlutterBinding");
+    WidgetsFlutterBinding.ensureInitialized();
+
+    if (kDebugMode) print("Step 1: Initializing Firebase");
+    await FirebaseApi.initialize();
+
+    if (kDebugMode) print("Step 2: Initializing Firebase");
+    await FirebaseApi.initNotification();
+
+    if (kDebugMode) print("Step 3: Initializing OneSignal");
+    OneSignal.initialize("57668fe6-896d-42e0-9b3e-42dab3fb92d2");
+    OneSignal.Debug.setLogLevel(OSLogLevel.debug);
+    await OneSignal.Notifications.requestPermission(true);
+
+    if (kDebugMode) print("Step 4: Applying security flags");
+    await _applySecurityFlags();
+
+    if (kDebugMode) print("Step 5: Initializing Supabase");
+    await Supabase.initialize(
+      url: 'https://shcwsfoylsjakwlezini.supabase.co',
+      anonKey:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNoY3dzZm95bHNqYWt3bGV6aW5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjY1ODI1NzksImV4cCI6MjA0MjE1ODU3OX0.FlDFdkVRTaAna_MycZ0b4p5Y2HieXEwXzkmu0vTJD-E',
     );
-  } catch (e) {
-    if (kDebugMode) {
-      print('Firebase initialization error: $e');
-    }
-  }
 
-  // Initialize OneSignal
-  OneSignal.initialize("57668fe6-896d-42e0-9b3e-42dab3fb92d2");
-
-  // Optional: Logging for debugging
-  OneSignal.Debug.setLogLevel(OSLogLevel.debug);
-
-  // OneSignal Notification Will be Shown
-  OneSignal.Notifications.requestPermission(true);
-
-  _applySecurityFlags();
-
-  await Supabase.initialize(
-    url: 'https://shcwsfoylsjakwlezini.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNoY3dzZm95bHNqYWt3bGV6aW5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjY1ODI1NzksImV4cCI6MjA0MjE1ODU3OX0.FlDFdkVRTaAna_MycZ0b4p5Y2HieXEwXzkmu0vTJD-E',
-  );
-
-  /// 1.1.2 Set navigator key to ZegoUIKitPrebuiltCallInvitationService
-  ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
-
-  /// Initialize Zego and configure calling UI
-  ZegoUIKit().initLog().then((value) {
+    if (kDebugMode) print("Step 6: Setting up Zego");
+    ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
+    await ZegoUIKit().initLog();
     ZegoUIKitPrebuiltCallInvitationService().useSystemCallingUI(
       [ZegoUIKitSignalingPlugin()],
     );
 
+    if (kDebugMode) print("Step 7: Launching MyApp");
     runApp(MyApp(navigatorKey: navigatorKey));
-  });
+  } catch (e, stackTrace) {
+    if (kDebugMode) {
+      print("Error in main: $e");
+      print("Stack trace: $stackTrace");
+    }
+    runApp(ErrorApp(error: e.toString()));
+  }
 }
 
 Future<void> _applySecurityFlags() async {
