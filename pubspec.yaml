@@ -83,6 +83,8 @@ dependency_overrides:
   web: 0.3.0
   foo: 0.0.1
   webview_flutter_wkwebview: 3.9.2
+  firebase_core_platform_interface: ^5.0.0
+
 
 
 

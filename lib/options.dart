@@ -6,33 +6,34 @@ class DefaultFirebaseOptions {
     if (const bool.fromEnvironment('dart.vm.product')) {
       // Release mode (use default production configuration)
       return const FirebaseOptions(
-        apiKey: 'AIzaSyBH4OdG3YKIP1JipJTW6VXqcKgZLe5aB_Y',
-        appId: '1:328467516650:android:ef76a807ec69df1dc6db93',
-        messagingSenderId: '328467516650',
-        projectId: 'fianderapp',
-        storageBucket: 'fianderapp.appspot.com',
+        apiKey: 'AIzaSyAwUcWebG7X2ny1fJk1VRGjRSSAlBF8-1Y',
+        appId: '1:472021146803:android:5a075b9e6e91efd6d024c6',
+        messagingSenderId: '472021146803',
+        projectId: 'fiander-bf964',
+        storageBucket: 'fiander-bf964.appspot.com',
       );
     }
 
     if (defaultTargetPlatform == TargetPlatform.android) {
       // Android configuration
       return const FirebaseOptions(
-        apiKey: 'AIzaSyBH4OdG3YKIP1JipJTW6VXqcKgZLe5aB_Y',
-        appId: '1:328467516650:android:ef76a807ec69df1dc6db93',
-        messagingSenderId: '328467516650',
-        projectId: 'fianderapp',
-        storageBucket: 'fianderapp.appspot.com',
+        apiKey: 'AIzaSyAwUcWebG7X2ny1fJk1VRGjRSSAlBF8-1Y',
+        appId: '1:472021146803:android:5a075b9e6e91efd6d024c6',
+        messagingSenderId: '472021146803',
+        projectId: 'fiander-bf964',
+        storageBucket: 'fiander-bf964.appspot.com',
       );
     } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-      // iOS (Add real values for iOS keys if you're targeting iOS)
+      // iOS configuration
       return const FirebaseOptions(
-        apiKey: 'YOUR_IOS_API_KEY',
-        appId: 'YOUR_IOS_APP_ID',
-        messagingSenderId: 'YOUR_IOS_MESSAGING_SENDER_ID',
-        projectId: 'fianderapp',
-        storageBucket: 'fianderapp.appspot.com',
-        iosClientId: 'YOUR_IOS_CLIENT_ID',
-        iosBundleId: 'YOUR_IOS_BUNDLE_ID',
+        apiKey: 'AIzaSyD99ApVo7Mq-2WJKA8brJZ7dsOpC0hhjd8',
+        appId: '1:472021146803:ios:3edeea96422684f3d024c6',
+        messagingSenderId: '472021146803',
+        projectId: 'fiander-bf964',
+        storageBucket: 'fiander-bf964.appspot.com',
+        iosClientId:
+            'YOUR_IOS_CLIENT_ID', // Replace if you have a specific value
+        iosBundleId: 'com.example.fiander',
       );
     } else {
       throw UnsupportedError('Platform not supported');

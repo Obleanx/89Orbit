@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "328467516650",
-    "project_id": "fianderapp",
-    "storage_bucket": "fianderapp.appspot.com"
+    "project_number": "472021146803",
+    "project_id": "fiander-bf964",
+    "storage_bucket": "fiander-bf964.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:328467516650:android:ef76a807ec69df1dc6db93",
+        "mobilesdk_app_id": "1:472021146803:android:5a075b9e6e91efd6d024c6",
         "android_client_info": {
           "package_name": "com.example.fiander"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBH4OdG3YKIP1JipJTW6VXqcKgZLe5aB_Y"
+          "current_key": "AIzaSyAwUcWebG7X2ny1fJk1VRGjRSSAlBF8-1Y"
         }
       ],
       "services": {

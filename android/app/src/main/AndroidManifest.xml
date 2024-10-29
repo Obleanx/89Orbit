@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.fiander"> 
 
+    <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
@@ -16,29 +18,32 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.MANAGE_DISPLAY_SECURITY" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:label="fianDer"
         android:icon="@mipmap/launcher_icon"
         tools:node="replace">
 
-        <!-- Keep the WorkManagerInitializer for Firebase -->
+        <!-- WorkManager for Firebase -->
         <provider
             android:name="androidx.work.impl.WorkManagerInitializer"
             android:authorities="${applicationId}.workmanager-init"
             android:enabled="false"
             android:exported="false" />
 
+        <!-- CallKit Incoming Broadcast Receiver -->
         <receiver
             android:name="com.hiennv.flutter_callkit_incoming.CallkitIncomingBroadcastReceiver"
             android:exported="${callkitIncomingBroadcastReceiverExported}"
             tools:replace="android:exported" />
 
+        <!-- Google Play Services version -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
+        <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -47,7 +52,8 @@
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
-            <!-- Deep link configuration -->
+
+            <!-- Deep link configuration during email verification and other pop messages-->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -57,36 +63,74 @@
                     android:host="email-verification" />
             </intent-filter>
 
-            <meta-data
-                android:name="io.flutter.embedding.android.NormalTheme"
-                android:resource="@style/NormalTheme" />
-
+            <!-- Launcher configuration -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- Flutter Normal Theme -->
+            <meta-data
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme" />
         </activity>
 
+        <!-- Flutter Embedding version -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-            <service
-                android:name="com.onesignal.NotificationServiceExtension"
-                android:permission="android.permission.BIND_JOB_SERVICE"
-                android:exported="false" />
 
+        <!-- Firebase Messaging Service -->
+        <service
+            android:name="com.google.firebase.messaging.FirebaseMessagingService"
+            android:exported="true" />
+
+        <!-- Firebase Component Discovery Service -->
+        <service 
+            android:name="com.google.firebase.components.ComponentDiscoveryService" 
+            android:permission="com.google.android.c2dm.permission.RECEIVE"
+            android:directBootAware="true" 
+            android:exported="false">
+            <meta-data
+                android:name="com.google.firebase.components:com.google.firebase.analytics.connector.internal.AnalyticsConnectorRegistrar"
+                android:value="com.google.firebase.components.ComponentRegistrar" />
+            <meta-data 
+                android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingRegistrar" 
+                android:value="com.google.firebase.components.ComponentRegistrar" />
+            <meta-data 
+                android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsRegistrar" 
+                android:value="com.google.firebase.components.ComponentRegistrar" />
+            <meta-data
+                android:name="com.google.firebase.components:com.google.firebase.auth.FirebaseAuthRegistrar"
+                android:value="com.google.firebase.components.ComponentRegistrar" />
+            <meta-data
+                android:name="com.google.firebase.components:com.google.firebase.analytics.connector.internal.AnalyticsConnectorRegistrar"
+                android:value="com.google.firebase.components.ComponentRegistrar" />
+        </service>
+
+        <!-- OneSignal Notification Service Extension -->
+        <service
+            android:name="com.onesignal.NotificationServiceExtension"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            
+            android:exported="true" />
+
+        <!-- OneSignal Broadcast Receiver -->
         <receiver
-                android:name="com.onesignal.GcmBroadcastReceiver"
-                android:permission="com.google.android.c2dm.permission.SEND"
-                android:exported="true">
-        <intent-filter>
+            android:name="com.onesignal.GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND"
+            android:exported="true">
+            <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <category android:name="${applicationId}" />
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </receiver>
 
-        <service android:name="com.onesignal.GcmIntentService" android:exported="false" />
-
+        <!-- OneSignal Intent Service -->
+        <service
+            android:name="com.onesignal.GcmIntentService"
+            android:exported="false" />
 
     </application>
 </manifest>
