@@ -3,8 +3,8 @@ import 'package:fiander/COMPONENTS/join_button.dart';
 import 'package:fiander/COMPONENTS/upcoming_events.dart';
 import 'package:fiander/CONSTANTS/constants.dart';
 import 'package:fiander/DATE_MATHCHING/pairing_logic.dart';
+import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/events_screen.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/profile_screen.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import '../../COMPONENTS/FETCHING_USERS_DETAILS/profile_picture.dart';
@@ -12,7 +12,7 @@ import 'nav_bar.dart';
 import 'settings_screen.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -22,16 +22,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       routes: {
-        '/home': (context) => HomeScreen1(),
+        '/home': (context) => const HomeScreen1(),
         '/events': (context) => const EventsScreen(),
         '/settings': (context) => const SettingsScreen(),
-        '/profile': (context) => ProfileScreen(),
+        '/profile': (context) => const ProfileScreen(),
       },
       title: 'Sliver Todo App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomeScreen1(),
+      home: const HomeScreen1(),
     );
   }
 }
@@ -75,11 +75,11 @@ class HomeScreen1 extends StatelessWidget {
                 const Avatar$username(),
                 const SizedBox(height: 10),
                 CarouselSection(),
-                EventDateText(),
-                AvailableEventsTitle(),
-                EventGrid(),
-                EventGrid(),
-                UpcomingEventsTitle(),
+                const EventDateText(),
+                const AvailableEventsTitle(),
+                const EventGrid(),
+                const EventGrid(),
+                const UpcomingEventsTitle(),
                 const WeekendEventList(
                   saturdayTime: '2:00-3:00pm',
                   sundayTime: '4:00-5:00pm',

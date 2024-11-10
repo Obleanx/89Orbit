@@ -177,12 +177,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     SettingsListItem(
                       title: 'Event history',
                       onTap: () {
-                        Navigator.push(
+                        // Example of how to use the screen
+                        final currentUser =
+                            Supabase.instance.client.auth.currentUser;
+                        if (currentUser != null) {
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
-                              // ignore: prefer_const_constructors
-                              builder: (context) => EventHistoryScreen(),
-                            ));
+                              builder: (context) => EventHistoryScreen(
+                                userId: currentUser.id,
+                              ),
+                            ),
+                          );
+                        }
                       },
                     ),
                     SettingsListItem(

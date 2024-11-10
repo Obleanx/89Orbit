@@ -67,7 +67,7 @@ class OnboardingPage1 extends StatelessWidget {
                         // minimumSize: const Size(100, 30),
                       ),
                       child: const Text(
-                        'Login with phone number',
+                        "Login using your email.",
                         style: TextStyle(
                           color: TextsInsideButtonColor,
                           fontWeight: FontWeight.bold,

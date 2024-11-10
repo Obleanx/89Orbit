@@ -75,28 +75,3 @@ class CustomBottomNavigationBar extends StatelessWidget {
     );
   }
 }
-
-class EventsScreen extends StatelessWidget {
-  const EventsScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    // ignore: prefer_const_constructors
-                    builder: (context) => HomeScreen1(),
-                  ));
-            },
-          ),
-          title: const Text('Events')),
-      body: const Center(child: Text('Events Screen')),
-      bottomNavigationBar: const CustomBottomNavigationBar(),
-    );
-  }
-}

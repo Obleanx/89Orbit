@@ -2,11 +2,13 @@
 import 'package:fiander/PROVIDERS/app_state_provider.dart';
 import 'package:fiander/PROVIDERS/atm_idetails.dart';
 import 'package:fiander/PROVIDERS/avatar_screen_providers.dart';
+import 'package:fiander/PROVIDERS/create_account_provider.dart';
 import 'package:fiander/PROVIDERS/home_screen_provider.dart';
 import 'package:fiander/PROVIDERS/login_screen_provider.dart';
 import 'package:fiander/PROVIDERS/pay_popup_provider.dart';
 import 'package:fiander/PROVIDERS/settings_screen_provider.dart';
 import 'package:fiander/PROVIDERS/user_preference_provider.dart';
+import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/events_screen.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/home_screen.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/nav_bar.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/profile_screen.dart';
@@ -85,6 +87,9 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => EventAccessNotifier()),
         ChangeNotifierProvider(create: (_) => CardProvider()),
         ChangeNotifierProvider(create: (_) => UserPreferencesProvider()),
+        ChangeNotifierProvider(
+          create: (_) => CreateAccountProvider(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -115,4 +120,6 @@ class _MyAppState extends State<MyApp> {
 //physics: const NeverScrollableScrollPhysics(), // Disable sliding
 //physics: const NeverScrollableScrollPhysics(), // Disable sliding
 //add it in the page view of smooth page indicator
+
+
 

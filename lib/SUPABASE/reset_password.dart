@@ -1,4 +1,8 @@
+import 'package:fiander/COMPONENTS/password_UI.dart';
+import 'package:fiander/COMPONENTS/reuseable_widgets.dart';
+import 'package:fiander/CONSTANTS/constants.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/home_screen.dart';
+import 'package:fiander/SUPABASE/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uni_links2/uni_links.dart';
@@ -137,7 +141,17 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isResetLinkSent ? 'Reset Password' : 'Forgot Password'),
+        // title: Text(_isResetLinkSent ? 'Reset Password' : 'Forgot Password'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const LoginWithPhonenumber()),
+            );
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -146,61 +160,54 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           child: Column(
             children: [
               if (!_isResetLinkSent) ...[
-                TextFormField(
+                CustomTextFormField(
                   controller: _emailController,
-                  decoration: const InputDecoration(labelText: 'Email'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
-                    }
-                    return null;
-                  },
+                  labelText: 'Email address',
+                  hintText: 'Enter your email',
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) =>
+                      value?.isEmpty ?? true ? 'Please enter your email' : null,
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _isLoading ? null : _sendResetPasswordEmail,
+                  style: elevatedButtonDesign,
                   child: _isLoading
                       ? const CircularProgressIndicator()
-                      : const Text('Send Reset Link'),
+                      : const Text(
+                          'Send Reset Link',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
                 ),
               ],
               if (_isResetLinkSent) ...[
-                TextFormField(
-                  controller: _passwordController,
-                  decoration: const InputDecoration(labelText: 'New Password'),
-                  obscureText: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a new password';
-                    }
-                    if (value.length < 8) {
-                      return 'Password must be at least 8 characters long';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 20),
-                TextFormField(
-                  controller: _confirmPasswordController,
-                  decoration:
-                      const InputDecoration(labelText: 'Confirm Password'),
-                  obscureText: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please confirm your password';
-                    }
-                    if (value != _passwordController.text) {
-                      return 'Passwords do not match';
-                    }
-                    return null;
-                  },
-                ),
+                PasswordFormWidgets.buildPasswordField(context),
+                const SizedBox(height: 16),
+                PasswordFormWidgets.buildPasswordValidationIndicators(context),
+                const SizedBox(height: 16),
+                PasswordFormWidgets.buildConfirmPasswordField(context),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _isLoading ? null : _resetPassword,
+                  style: ElevatedButton.styleFrom(
+                    elevation: 8.0,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    backgroundColor: TextsInsideButtonColor,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    minimumSize: const Size(140, 40),
+                  ),
                   child: _isLoading
                       ? const CircularProgressIndicator()
-                      : const Text('Reset Password'),
+                      : const Text(
+                          'Reset Password',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
                 ),
               ],
             ],

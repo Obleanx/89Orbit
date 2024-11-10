@@ -51,7 +51,7 @@ class _LoginWithPhonenumberState extends State<LoginWithPhonenumber> {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
                 ),
                 const Text(
-                  'Login with your phone number',
+                  "Login using your email.",
                   style: TextStyle(fontSize: 12, color: Colors.black),
                 ),
                 const SizedBox(height: 45),
