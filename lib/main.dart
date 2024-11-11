@@ -3,6 +3,7 @@ import 'package:fiander/PROVIDERS/app_state_provider.dart';
 import 'package:fiander/PROVIDERS/atm_idetails.dart';
 import 'package:fiander/PROVIDERS/avatar_screen_providers.dart';
 import 'package:fiander/PROVIDERS/create_account_provider.dart';
+import 'package:fiander/PROVIDERS/harmburger_provider.dart';
 import 'package:fiander/PROVIDERS/home_screen_provider.dart';
 import 'package:fiander/PROVIDERS/login_screen_provider.dart';
 import 'package:fiander/PROVIDERS/pay_popup_provider.dart';
@@ -15,6 +16,7 @@ import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/profile_screen.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/settings_screen.dart';
 import 'package:fiander/SCREENS/home_screen.dart';
 import 'package:fiander/SERVICES/firebase_API.dart';
+import 'package:fiander/app_lifecycle_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -52,6 +54,10 @@ void main() async {
     if (kDebugMode) print("Step 5: Initializing Zego");
     await ZegoService.initialize(navigatorKey);
 
+    // Wrap the app initialization in a WidgetsBinding.instance?.addObserver() call
+    WidgetsBinding.instance
+        ?.addObserver(AppLifecycleManager() as WidgetsBindingObserver);
+
     // Step 6: Launch main app
     if (kDebugMode) print("Step 6: Launching main app");
     runApp(MyApp(navigatorKey: navigatorKey));
@@ -87,9 +93,9 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => EventAccessNotifier()),
         ChangeNotifierProvider(create: (_) => CardProvider()),
         ChangeNotifierProvider(create: (_) => UserPreferencesProvider()),
-        ChangeNotifierProvider(
-          create: (_) => CreateAccountProvider(),
-        ),
+        ChangeNotifierProvider(create: (_) => CreateAccountProvider()),
+        ChangeNotifierProvider(create: (_) => HamburgerMenuProvider()),
+        ChangeNotifierProvider(create: (_) => AppLifecycleManager()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

@@ -4,6 +4,7 @@ import 'package:fiander/COMPONENTS/upcoming_events.dart';
 import 'package:fiander/CONSTANTS/constants.dart';
 import 'package:fiander/DATE_MATHCHING/pairing_logic.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/events_screen.dart';
+import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/hamburger.dart';
 import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -49,10 +50,15 @@ class HomeScreen1 extends StatelessWidget {
             floating: true,
             pinned: true,
             expandedHeight: 70,
-            leading: IconButton(
+            leading: // In your app bar where you have the menu icon:
+                IconButton(
               icon: const Icon(Icons.menu),
               onPressed: () {
-                // TODO: Implement menu functionality
+                showDialog(
+                  context: context,
+                  barrierColor: Colors.black54, // Semi-transparent overlay
+                  builder: (context) => const HamburgerMenuScreen(),
+                );
               },
             ),
             title: Image.asset('lib/images/fianderlogo.png', height: 40),
@@ -78,7 +84,7 @@ class HomeScreen1 extends StatelessWidget {
                 const EventDateText(),
                 const AvailableEventsTitle(),
                 const EventGrid(),
-                const EventGrid(),
+                // const EventGrid(),
                 const UpcomingEventsTitle(),
                 const WeekendEventList(
                   saturdayTime: '2:00-3:00pm',

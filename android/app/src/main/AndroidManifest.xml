@@ -24,10 +24,13 @@
 
    <application
        android:label="fianDer"
-       android:icon="@mipmap/launcher_icon"
+       android:name="${applicationName}"
+       android:icon="@mipmap/ic_launcher"
+       android:roundIcon="@mipmap/launcher_icon_round"
        android:allowBackup="true"
        android:hardwareAccelerated="true"
        tools:node="replace">
+       
 
        <!-- WorkManager for Firebase -->
        <provider

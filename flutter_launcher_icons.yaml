@@ -1,25 +1,30 @@
-# flutter pub run flutter_launcher_icons
 flutter_launcher_icons:
-  image_path:  "lib/emojis/male5.png"
-
   android: true
-  image_path_android:  "lib/emojis/male5.png"
-  min_sdk_android: 21 # android min sdk min:16, default 21
-  adaptive_icon_background: "lib/images/fianderlogo.png"  
-  adaptive_icon_foreground: "lib/images/fianderlogo.png"  
-  # adaptive_icon_monochrome: "assets/icon/monochrome.png"
-
   ios: true
-  image_path_ios:  "lib/images/fianderlogo.png"
+  image_path: "lib/images/fianderlogo.png"
+  adaptive_icon_background: "#FFFFFF" # White background, or use your brand color
+  adaptive_icon_foreground: "lib/images/fianderlogo.png"
+  min_sdk_android: 21
   remove_alpha_channel_ios: true
-  adaptive_icon_background: "lib/images/fianderlogo.png"  
-  adaptive_icon_foreground: "lib/images/fianderlogo.png" 
-  #desaturate_tinted_to_grayscale_ios: true
+  
+  # Additional Android settings
+  adaptive_icon_mask: true # Enables adaptive icon masking
+  adaptive_icon_padding: true # Adds padding to prevent cutoffnd: "lib/images/fianderlogo.png"
+  
+  # Android-specific settings
+  adaptive_icon_padding: true # Adds padding to prevent cutoff
+  remove_alpha_ios: true # Removes transparency for iOS
+  
+  # Make sure your icon meets these requirements:
+  # - PNG format
+  # - Square dimensions (1024x1024 recommended)
+  # - No transparency for the main icon
+  # - For adaptive icons, foreground should have transparency
 
   web:
     generate: true
     image_path: "lib/images/fianderlogo.png"
-    #background_color: "#hexcode"
+    background_color: "#hexcode"
     theme_color: "#hexcode"
 
   windows:

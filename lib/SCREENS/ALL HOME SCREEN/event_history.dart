@@ -1,29 +1,10 @@
+import 'package:fiander/COMPONENTS/event_details.dart';
 import 'package:fiander/CONSTANTS/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-// Event Details model remains the same
-class EventDetails {
-  final String eventType;
-  final String eventDate;
-  final String eventTime;
-
-  EventDetails({
-    required this.eventType,
-    required this.eventDate,
-    required this.eventTime,
-  });
-
-  factory EventDetails.fromJson(Map<String, dynamic> json) {
-    return EventDetails(
-      eventType: json['event_type'] ?? '',
-      eventDate: json['event_date'] ?? '',
-      eventTime: json['event_time'] ?? '',
-    );
-  }
-}
+import 'package:fiander/COMPONENTS/registered_eventsUi.dart';
 
 // Widget class
 class EventHistoryScreen extends StatefulWidget {
@@ -80,6 +61,43 @@ class _EventHistoryScreenState extends State<EventHistoryScreen> {
         eventDate: 'N/A',
         eventTime: 'N/A',
       );
+    }
+  }
+
+  late Future<List<EventDetails>> likedEventsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    likedEventsFuture = _fetchLikedEvents();
+  }
+
+  Future<List<EventDetails>> _fetchLikedEvents() async {
+    try {
+      final currentUser = Supabase.instance.client.auth.currentUser;
+      if (currentUser == null) {
+        return [];
+      }
+
+      final response = await Supabase.instance.client
+          .from('speed_dating_events')
+          .select('event_type, event_date, event_time, is_liked')
+          .eq('user_id', currentUser.id)
+          .eq('is_liked', true) // Only fetch liked events
+          .order('event_date', ascending: true);
+
+      if (response == null || (response as List).isEmpty) {
+        return [];
+      }
+
+      return (response as List)
+          .map((event) => EventDetails.fromJson(event))
+          .toList();
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching liked events: $e');
+      }
+      return [];
     }
   }
 
@@ -223,94 +241,78 @@ class _EventHistoryScreenState extends State<EventHistoryScreen> {
   }
 
   Widget _buildLikedEvents() {
-    return ListView.builder(
-      itemCount: 5,
-      itemBuilder: (context, index) => const LikedEventCard(),
-    );
-  }
+    return FutureBuilder<List<EventDetails>>(
+      future: likedEventsFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-  Widget _buildNoEventsRegistered() {
-    return const Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          //  Image.network('https://example.com/sad_vector.png'),
-          Text('No Events Registered'),
-        ],
-      ),
-    );
-  }
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
 
-  Widget _buildInfoRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label),
-          Text(
-            value,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
+        final events = snapshot.data ?? [];
+
+        if (events.isEmpty) {
+          return const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'No Liked Events',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
+          );
+        }
+
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: events.length,
+          itemBuilder: (context, index) {
+            return LikedEventCard(eventDetails: events[index]);
+          },
+        );
+      },
     );
   }
 }
 
-class LikedEventCard extends StatelessWidget {
-  const LikedEventCard({super.key});
+Widget _buildNoEventsRegistered() {
+  return const Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        //  Image.network('https://example.com/sad_vector.png'),
+        Text('No Events Registered'),
+      ],
+    ),
+  );
+}
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          children: [
-            const Column(
-              children: [
-                Text('July'),
-                Text(
-                  '13',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Saturday',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const Text('2:00-3:00pm'),
-                  TextButton(
-                    onPressed: () {},
-                    child: const Text('See event summary'),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(
-              Icons.favorite,
-              color: Colors.red,
-              size: 32,
-            ),
-          ],
+Widget _buildInfoRow(String label, String value) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8.0),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label),
+        Text(
+          value,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
         ),
-      ),
-    );
-  }
+      ],
+    ),
+  );
 }
 
 class EventProvider extends ChangeNotifier {
