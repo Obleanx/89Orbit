@@ -1,8 +1,6 @@
 // lib/widgets/custom_bottom_navigation_bar.dart
 // ignore_for_file: depend_on_referenced_packages
-
 import 'package:fiander/CONSTANTS/constants.dart';
-import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/home_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

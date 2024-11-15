@@ -3,28 +3,29 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AppLifecycleManager extends ChangeNotifier {
+class AppLifecycleManager extends ChangeNotifier with WidgetsBindingObserver {
   final Map<String, dynamic> _appState = {};
 
   Map<String, dynamic> get appState => _appState;
 
+  AppLifecycleManager() {
+    WidgetsBinding.instance.addObserver(this); // Register observer
+    loadAppState(); // Load app state on initialization
+  }
+
   Future<void> saveAppState() async {
     final prefs = await SharedPreferences.getInstance();
 
-    // Save the current route
-    final currentRoute = ModalRoute.of(NavigatorState().context)?.settings.name;
-    _appState['currentRoute'] = currentRoute;
-
-    // Save any other relevant state, like form data or scroll positions
+    // Save any relevant state (adjust as needed)
     _appState['formData'] = {
-      // Add your form data here
+      // Add form data
     };
     _appState['scrollPositions'] = {
-      // Add your scroll positions here
+      // Add scroll position data
     };
 
-    // Save the state to SharedPreferences
-    await prefs.setString('appState', _appState.toString());
+    // Save the state as a JSON string to SharedPreferences
+    await prefs.setString('appState', jsonEncode(_appState));
     notifyListeners();
   }
 
@@ -39,8 +40,16 @@ class AppLifecycleManager extends ChangeNotifier {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive) {
+      saveAppState(); // Save state when app goes to the background
+    }
+  }
+
+  @override
   void dispose() {
-    saveAppState();
+    WidgetsBinding.instance.removeObserver(this); // Remove observer
     super.dispose();
   }
 }

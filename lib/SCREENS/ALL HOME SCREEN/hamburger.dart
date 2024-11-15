@@ -1,4 +1,5 @@
 import 'package:fiander/PROVIDERS/harmburger_provider.dart';
+import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/join_event.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -45,8 +46,21 @@ class HamburgerMenuScreen extends StatelessWidget {
                           builder: (context, provider, child) {
                             return InkWell(
                               onTap: () {
-                                provider.toggleTailoredSelected();
-                                // Handle "Find Your Spec" tap
+                                provider.toggleGeneralSelected();
+                                // Navigate to JoinEventScreen with required arguments
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => JoinEventScreen(
+                                      eventType:
+                                          "Sample Event", // Replace with actual event type
+                                      selectedDate:
+                                          "2024-01-01", // Replace with actual selected date
+                                      selectedTime:
+                                          "10:00 AM", // Replace with actual selected time
+                                    ),
+                                  ),
+                                );
                               },
                               child: Row(
                                 children: [
@@ -92,7 +106,20 @@ class HamburgerMenuScreen extends StatelessWidget {
                             return InkWell(
                               onTap: () {
                                 provider.toggleGeneralSelected();
-                                // Handle "Find a Quick Match" tap
+                                // Navigate to JoinEventScreen with required arguments
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => JoinEventScreen(
+                                      eventType:
+                                          "Sample Event", // Replace with actual event type
+                                      selectedDate:
+                                          "2024-01-01", // Replace with actual selected date
+                                      selectedTime:
+                                          "10:00 AM", // Replace with actual selected time
+                                    ),
+                                  ),
+                                );
                               },
                               child: Row(
                                 children: [

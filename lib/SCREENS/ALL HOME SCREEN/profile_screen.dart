@@ -149,7 +149,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         backgroundImage: avatarAsset != null
                             ? AssetImage(avatarAsset!)
                             : const AssetImage(
-                                'lib/images/default_avatar.png'), // Update with your asset
+                                'lib/images/emoji5.png'), // Update with your asset
                       ),
                     ),
                   ),

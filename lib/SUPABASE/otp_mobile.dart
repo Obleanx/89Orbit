@@ -1,9 +1,9 @@
 import 'package:fiander/CONSTANTS/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:supabase_flutter/supabase_flutter.dart'; // Import Supabase package
-import 'package:supabase/supabase.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'female_dp.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
   const OtpVerificationScreen({Key? key}) : super(key: key);
@@ -17,8 +17,12 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   bool _isVerifying = false;
   bool _isResending = false;
   String? _phoneNumber;
+  String? _verificationId;
+  int? _resendToken; // Store the resend token from Firebase
+
   final List<TextEditingController> _otpControllers =
       List.generate(6, (index) => TextEditingController());
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   void dispose() {
@@ -51,44 +55,78 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     }
   }
 
-// Send OTP using Supabase's Twilio integration
-  Future<void> _sendOtp() async {
+  // Send OTP using Firebase
+  Future<void> _sendOtp({bool isResend = false}) async {
     try {
       if (_phoneNumber != null) {
-        await Supabase.instance.client.auth.signInWithOtp(
-          phone: _phoneNumber!,
-        );
-
         setState(() {
-          _isCodeSent = true;
+          if (isResend) {
+            _isResending = true;
+          }
         });
+
+        await _auth.verifyPhoneNumber(
+          phoneNumber: _phoneNumber!,
+          forceResendingToken:
+              isResend ? _resendToken : null, // Use resend token if resending
+          verificationCompleted: (PhoneAuthCredential credential) async {
+            await _auth.signInWithCredential(credential);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (BuildContext context) => const FemaleProfilePicture(),
+              ),
+            );
+          },
+          verificationFailed: (FirebaseAuthException e) {
+            _showErrorDialog('Error sending OTP: ${e.message}');
+          },
+          codeSent: (String verificationId, int? resendToken) {
+            setState(() {
+              _isCodeSent = true;
+              _verificationId = verificationId;
+              _resendToken = resendToken; // Store the token for future resends
+              _isResending = false;
+            });
+          },
+          codeAutoRetrievalTimeout: (String verificationId) {
+            _verificationId = verificationId;
+          },
+          timeout: const Duration(seconds: 60),
+        );
       }
     } catch (e) {
       _showErrorDialog('Error sending OTP: $e');
+    } finally {
+      setState(() {
+        _isResending = false;
+      });
     }
   }
 
-//verify otp method
+  // Verify OTP method (remains the same)
   Future<void> _verifyOtp(String otp) async {
     setState(() {
       _isVerifying = true;
     });
 
     try {
-      final response = await Supabase.instance.client.auth.verifyOTP(
-        phone: _phoneNumber!,
-        token: otp,
-        type: OtpType.sms,
+      final credential = PhoneAuthProvider.credential(
+        verificationId: _verificationId!,
+        smsCode: otp,
       );
 
-      if (response.session == null) {
-        _showErrorDialog('OTP verification failed');
-      } else {
+      final userCredential = await _auth.signInWithCredential(credential);
+
+      if (userCredential.user != null) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-              builder: (BuildContext context) => const FemaleProfilePicture()),
+            builder: (BuildContext context) => const FemaleProfilePicture(),
+          ),
         );
+      } else {
+        _showErrorDialog('OTP verification failed');
       }
     } catch (e) {
       _showErrorDialog('Error verifying OTP: $e');
@@ -99,16 +137,16 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     }
   }
 
-  // Show error dialog
+  // Add this helper method if you don't already have it
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
+      builder: (context) => AlertDialog(
         title: const Text('Error'),
         content: Text(message),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
+            onPressed: () => Navigator.pop(context),
             child: const Text('OK'),
           ),
         ],
@@ -219,7 +257,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 class OtpInputSection extends StatefulWidget {
   final Function(String) onOtpComplete;
 
-  OtpInputSection({Key? key, required this.onOtpComplete}) : super(key: key);
+  const OtpInputSection({super.key, required this.onOtpComplete});
 
   @override
   _OtpInputSectionState createState() => _OtpInputSectionState();

@@ -54,13 +54,14 @@ void main() async {
     if (kDebugMode) print("Step 5: Initializing Zego");
     await ZegoService.initialize(navigatorKey);
 
-    // Wrap the app initialization in a WidgetsBinding.instance?.addObserver() call
-    WidgetsBinding.instance
-        ?.addObserver(AppLifecycleManager() as WidgetsBindingObserver);
-
-    // Step 6: Launch main app
+    // Step 6: Launch main app with lifecycle management
     if (kDebugMode) print("Step 6: Launching main app");
-    runApp(MyApp(navigatorKey: navigatorKey));
+    runApp(
+      ChangeNotifierProvider(
+        create: (_) => AppLifecycleManager(),
+        child: MyApp(navigatorKey: navigatorKey),
+      ),
+    );
   } catch (e, stackTrace) {
     if (kDebugMode) {
       print("Error during initialization: $e");
@@ -128,4 +129,4 @@ class _MyAppState extends State<MyApp> {
 //add it in the page view of smooth page indicator
 
 
-
+ 

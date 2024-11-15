@@ -32,6 +32,29 @@ allprojects {
 
 rootProject.buildDir = '../build'
 subprojects {
+
+     // Fix for verifyReleaseResources
+    afterEvaluate { project ->
+        if (project.plugins.hasPlugin("com.android.application") ||
+            project.plugins.hasPlugin("com.android.library")) {
+            project.android {
+                compileSdkVersion 34
+                buildToolsVersion "34.0.0"
+                
+                // Add default config to ensure compatibility
+                defaultConfig {
+                    minSdkVersion 23
+                    targetSdkVersion 34
+                }
+                
+                // Add namespace handling
+                if (namespace == null) {
+                    namespace project.group
+                }
+            }
+        }
+    }
+    
     project.buildDir = "${rootProject.buildDir}/${project.name}"
     project.evaluationDependsOn(':app')
 }
