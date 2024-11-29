@@ -1,12 +1,14 @@
-// ignore_for_file: depend_on_referenced_packages, library_private_types_in_public_api, use_build_context_synchronously
-import 'package:fiander/COMPONENTS/reuseable_widgets.dart';
-import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/home_screen.dart';
+import 'reset_password.dart';
+import '../CONSTANTS/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../CONSTANTS/constants.dart';
-import '../PROVIDERS/login_screen_provider.dart';
 import '../SCREENS/onboarding_state.dart';
-import 'reset_password.dart';
+import '../PROVIDERS/login_screen_provider.dart';
+import 'package:fiander/SUPABASE/login_class.dart';
+import 'package:fiander/COMPONENTS/reuseable_widgets.dart';
+import 'package:fiander/SCREENS/ALL%20HOME%20SCREEN/home_screen.dart';
+
+// ignore_for_file: depend_on_referenced_packages, library_private_types_in_public_api, use_build_context_synchronously
 
 class LoginWithPhonenumber extends StatefulWidget {
   const LoginWithPhonenumber({super.key});
@@ -84,7 +86,9 @@ class _LoginWithPhonenumberState extends State<LoginWithPhonenumber> {
                     child: const Text(
                       'Forgot password',
                       style: TextStyle(
-                          color: TextsInsideButtonColor, fontSize: 12),
+                        color: TextsInsideButtonColor,
+                        fontSize: 12,
+                      ),
                     ),
                   ),
                 ),
@@ -93,9 +97,18 @@ class _LoginWithPhonenumberState extends State<LoginWithPhonenumber> {
                   alignment: Alignment.bottomCenter,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomeScreen1()),
+                      FirebaseAuthService().login(
+                        context: context,
+                        email: _emailController.text,
+                        password: _passwordController.text,
+                        onSuccess: () {
+                          // Navigate to HomeScreen or perform any other action after successful login
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const HomeScreen1()),
+                          );
+                        },
                       );
                     },
                     style: ElevatedButton.styleFrom(

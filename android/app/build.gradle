@@ -51,7 +51,7 @@ android {
     defaultConfig {
         multiDexEnabled true
         applicationId "com.example.fiander"
-        minSdkVersion 29
+        minSdkVersion 23
         targetSdkVersion 34
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName                 

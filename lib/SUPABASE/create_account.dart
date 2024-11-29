@@ -1,99 +1,19 @@
-// ignore_for_file: use_build_context_synchronously
-import 'dart:async';
-import 'package:fiander/PROVIDERS/create_account_provider.dart';
-import 'package:fiander/SUPABASE/user_informations.dart';
-import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:uni_links2/uni_links.dart';
-import '../COMPONENTS/reuseable_widgets.dart';
-import 'package:provider/provider.dart';
 import '../CONSTANTS/constants.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../COMPONENTS/reuseable_widgets.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fiander/SUPABASE/user_informations.dart';
+import 'package:fiander/PROVIDERS/create_account_provider.dart';
 
 class CreateAccount extends StatefulWidget {
+  const CreateAccount({super.key});
+
   @override
   _CreateAccountState createState() => _CreateAccountState();
 }
 
 class _CreateAccountState extends State<CreateAccount> {
-  StreamSubscription? _sub;
-  bool accountVerified = false; // To track if account is verified via deep link
-  late final StreamSubscription<AuthState> _authSubscriptions;
-
-  @override
-  void initState() {
-    super.initState();
-
-    handleInitialDeepLink();
-    _sub = uriLinkStream.listen((Uri? uri) {
-      if (uri != null && uri.host == 'email-verification') {
-        handleEmailVerification(uri);
-      }
-    });
-  } //
-
-  Future<void> handleInitialDeepLink() async {
-    final initialUri = await getInitialUri();
-    if (initialUri != null && initialUri.host == 'email-verification') {
-      handleEmailVerification(initialUri);
-    }
-  }
-
-  @override
-  void dispose() {
-    _sub?.cancel();
-    super.dispose();
-    _authSubscriptions.cancel();
-  } //
-
-  void handleEmailVerification(Uri uri) async {
-    final token = uri.queryParameters['token'];
-    if (token != null) {
-      try {
-        final response = await Supabase.instance.client.auth.verifyOTP(
-          token: token,
-          type: OtpType.email,
-        );
-        if (response.session != null) {
-          setState(() {
-            accountVerified = true;
-          });
-
-          // Automatically navigate to UserInformationScreen after verification
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const UserInformationScreen(),
-            ),
-          );
-        } else {
-          showErrorDialog('Email verification failed.');
-        }
-      } catch (e) {
-        showErrorDialog('An error occurred during email verification.');
-      }
-    }
-  }
-
-  void showErrorDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Error'),
-          content: Text(message),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  } //
-
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -304,35 +224,63 @@ Widget _buildNextButtonForSignUp(BuildContext context) {
           _showLoadingDialog(context); // Show loading dialog
 
           try {
-            final response = await Supabase.instance.client.auth.signUp(
+            // Use Firebase Authentication to create user
+            final UserCredential userCredential =
+                await FirebaseAuth.instance.createUserWithEmailAndPassword(
               email: provider.emailController.text.trim(),
               password: provider.passwordController.text.trim(),
             );
 
-            Navigator.of(context).pop(); // Close loading dialog
+            // Close loading dialog
+            Navigator.of(context).pop();
 
-            if (response.user != null) {
-              // Account successfully created, show success message
-              _showSuccessMessage(context);
+            if (userCredential.user != null) {
+              // Send email verification
+              await userCredential.user!.sendEmailVerification();
 
-              // Wait for email verification deep link
-              // Optionally, navigate to another screen or wait for verification
+              // Navigate to UserInformationScreen
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => const UserInformationScreen(),
                 ),
               );
-            } else {
-              // Account creation failed, show error message
-              _showErrorMessage(
-                  context, 'Failed to create account. Please try again.');
+
+              // Show success message about email verification
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Account created. Please verify your email.'),
+                  backgroundColor: Colors.green,
+                ),
+              );
             }
-          } on AuthException catch (e) {
-            Navigator.of(context).pop(); // Close loading dialog
-            _showErrorMessage(context, e.message); // Display auth error message
+          } on FirebaseAuthException catch (e) {
+            // Close loading dialog
+            Navigator.of(context).pop();
+
+            // Handle specific Firebase authentication errors
+            String errorMessage = 'An error occurred';
+            switch (e.code) {
+              case 'weak-password':
+                errorMessage = 'The password is too weak.';
+                break;
+              case 'email-already-in-use':
+                errorMessage = 'An account already exists with this email.';
+                break;
+              case 'invalid-email':
+                errorMessage = 'The email address is not valid.';
+                break;
+              default:
+                errorMessage = e.message ?? 'Authentication failed';
+            }
+
+            // Show error dialog
+            _showErrorMessage(context, errorMessage);
           } catch (e) {
-            Navigator.of(context).pop(); // Close loading dialog
+            // Close loading dialog
+            Navigator.of(context).pop();
+
+            // Show generic error message
             _showErrorMessage(
                 context, 'An unexpected error occurred. Please try again.');
           }
